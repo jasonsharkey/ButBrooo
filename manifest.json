@@ -1,0 +1,20 @@
+{
+  "name": "ButBrooo Fantasy Football",
+  "short_name": "ButBrooo",
+  "description": "The official app for the ButBrooo Fantasy Football League. Est. 2008. Just Don't Lose.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "IMG_4608.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "entertainment"],
+  "lang": "en-US"
+}
