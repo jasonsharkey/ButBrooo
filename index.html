@@ -279,7 +279,7 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
     <div class="chart-card"><div class="chart-wrap" style="height:380px"><canvas id="avgChart"></canvas></div></div>
 
     <div class="stats-section-title">Season Finishes by Member</div>
-    <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;padding:0 2px;">Tap multiple members to compare</p>
+    <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;padding:0 2px;">Tap multiple to compare</p>
     <div class="chart-card">
       <div class="filter-row" id="member-filter"></div>
       <div class="chart-wrap"><canvas id="memberChart"></canvas></div>
@@ -314,129 +314,6 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
         <div class="ai-response-text" id="ai-response-text"></div>
       </div>
     </div>
-
-</div>
-
-<!-- GLOBAL HEADER -->
-<div id="global-header">
-  <div class="header-page-title" id="header-title">ButBrooo</div>
-  <img src="IMG_4608.jpg" alt="BB" class="header-logo" onclick="navigate('home')"
-    onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
-  <div class="header-logo-fallback" id="logo-fallback" onclick="navigate('home')">BB</div>
-</div>
-
-<!-- HOME -->
-<div id="page-home" class="page active">
-  <div id="home-hero">
-    <div class="hero-grid-bg"></div>
-    <div class="hero-glow"></div>
-    <div class="hero-logo-wrap">
-      <img src="IMG_4608.jpg" alt="ButBrooo">
-      <div class="hero-logo-fallback">BB</div>
-    </div>
-    <div class="hero-title">BUT BROOO</div>
-    <div class="hero-motto">JUST DON'T LOSE</div>
-    <div class="hero-stats">
-      <div class="hero-stat"><div class="hero-stat-num">17</div><div class="hero-stat-label">Seasons</div></div>
-      <div class="hero-stat-divider"></div>
-      <div class="hero-stat"><div class="hero-stat-num">12</div><div class="hero-stat-label">Teams</div></div>
-      <div class="hero-stat-divider"></div>
-      <div class="hero-stat"><div class="hero-stat-num">'08</div><div class="hero-stat-label">Founded</div></div>
-    </div>
-    <div class="hero-quick-nav">
-      <button class="hero-nav-btn" onclick="navigate('timeline')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timeline
-      </button>
-      <button class="hero-nav-btn" onclick="navigate('stats')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats
-      </button>
-      <button class="hero-nav-btn" onclick="navigate('league')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>The League
-      </button>
-      <button class="hero-nav-btn" onclick="navigate('social')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>Social
-      </button>
-    </div>
-    <div class="champs-section">
-      <div class="champs-label">🏆 Hall of Champions</div>
-      <div class="champs-scroll" id="champs-scroll"></div>
-    </div>
-    <div class="social-bar">
-      <a href="https://twitter.com/butbrooo" target="_blank" class="social-link">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.766l7.731-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        @butbrooo
-      </a>
-      <a href="https://www.instagram.com/butbrooo/" target="_blank" class="social-link">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        @butbrooo
-      </a>
-    </div>
-  </div>
-</div>
-
-<!-- TIMELINE -->
-<div id="page-timeline" class="page">
-  <div class="timeline-container">
-    <p class="timeline-intro">The story of the greatest fantasy football league ever assembled. Tap <strong style="color:var(--gold)">+ Add Event</strong> to write history.</p>
-    <div id="timeline-list"></div>
-    <button class="add-event-btn" onclick="openAddModal()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      Add Event
-    </button>
-  </div>
-</div>
-
-<!-- STATS -->
-<div id="page-stats" class="page">
-  <div class="stats-wrap">
-    <div class="stats-section-title">Quick Stats</div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-card-label">Seasons</div><div class="stat-card-value">17</div><div class="stat-card-sub">2008 – 2024</div></div>
-      <div class="stat-card"><div class="stat-card-label">Teams</div><div class="stat-card-value">12</div><div class="stat-card-sub">Active Rosters</div></div>
-      <div class="stat-card"><div class="stat-card-label">Most Titles</div><div class="stat-card-value">3</div><div class="stat-card-sub">Phil (2012, 2014, 2021)</div></div>
-      <div class="stat-card"><div class="stat-card-label">Best Avg Rank</div><div class="stat-card-value">4.2</div><div class="stat-card-sub">Koslow</div></div>
-    </div>
-
-    <div class="stats-section-title">All-Time Avg Finish</div>
-    <div class="chart-card"><div class="chart-wrap" style="height:380px"><canvas id="avgChart"></canvas></div></div>
-
-    <div class="stats-section-title">Season Finishes by Member</div>
-    <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;padding:0 2px;">Tap multiple members to compare</p>
-    <div class="chart-card">
-      <div class="filter-row" id="member-filter"></div>
-      <div class="chart-wrap"><canvas id="memberChart"></canvas></div>
-    </div>
-
-    <div class="stats-section-title">AI Stats Analyzer</div>
-    <div class="ai-section">
-      <div class="ai-section-header">
-        <div class="ai-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        </div>
-        <div>
-          <h3>League Analyst</h3>
-          <p>AI-powered insights from 17 seasons of data</p>
-        </div>
-      </div>
-      <div class="ai-suggestions">
-        <div class="ai-suggestion" onclick="askAI('Who has won the most championships?')">Most titles?</div>
-        <div class="ai-suggestion" onclick="askAI('Who has the most consistent finishes?')">Most consistent?</div>
-        <div class="ai-suggestion" onclick="askAI('Who has improved the most over the years?')">Most improved?</div>
-        <div class="ai-suggestion" onclick="askAI('Who has the worst overall record in league history?')">Worst record?</div>
-        <div class="ai-suggestion" onclick="askAI('Give me a fun breakdown of any rivalries in the data')">Rivalries?</div>
-        <div class="ai-suggestion" onclick="askAI('Who is most likely to win based on recent trends?')">2025 prediction?</div>
-      </div>
-      <div class="ai-prompt-row">
-        <input class="ai-input" id="ai-input" type="text" placeholder="Ask about the league data..." onkeydown="if(event.key==='Enter')sendAI()">
-        <button class="ai-send-btn" onclick="sendAI()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
-      </div>
-      <div class="ai-response" id="ai-response">
-        <div class="ai-response-text" id="ai-response-text"></div>
-      </div>
-    </div>
-
 
   </div>
 </div>
@@ -508,6 +385,7 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>Social
   </button>
 </nav>
+</div>
 
 <!-- ADD MODAL -->
 <div class="modal-overlay" id="add-modal">
@@ -658,15 +536,15 @@ function updateQuickStats() {
 function buildTicker() {
   var champs = getChampions();
   var items  = [
-    'JUST DON\'T LOSE',
-    'EST. 2008',
-    'BUT BROOO FANTASY FOOTBALL',
-    '13 TEAMS - 17 SEASONS'
+    '🏈 JUST DON\'T LOSE',
+    '★ EST. 2008',
+    '🏆 BUT BROOO FANTASY FOOTBALL',
+    '⚡ 13 TEAMS - 17 SEASONS'
   ];
   champs.slice(-7).reverse().forEach(function(c) {
-    items.push(c.year + ' CHAMP: ' + c.name.toUpperCase());
+    items.push('🥇 ' + c.year + ' CHAMP: ' + c.name.toUpperCase());
   });
-  items.push('BOBBY FRIEDS FATHERLY TROPHY', 'JUST DON\'T LOSE BRO');
+  items.push('🔥 BOBBY FRIEDS FATHERLY TROPHY', '💀 JUST DON\'T LOSE BRO');
   var all = items.concat(items);
   document.getElementById('ticker-inner').innerHTML =
     all.map(function(t) { return '<span class="ticker-item">' + t + '</span>'; }).join('');
@@ -1060,6 +938,5 @@ if ('serviceWorker' in navigator) {
 loadData();
 
 </script>
-</div>
 </body>
 </html>
