@@ -510,6 +510,8 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
     <div class="modal-title">Add Timeline Event</div>
     <input type="number" class="modal-input" id="modal-year" placeholder="Year (e.g. 2024)" min="2008" max="2099">
     <textarea class="modal-input" id="modal-text" placeholder="Describe what happened..." rows="3" style="resize:none;"></textarea>
+    <input type="password" class="modal-input" id="modal-pin" placeholder="Commissioner PIN" maxlength="4" inputmode="numeric">
+    <div class="pin-error" id="modal-pin-error" style="margin-bottom:8px;">Incorrect PIN</div>
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
       <button class="btn-save" onclick="saveEvent()">Add Event</button>
@@ -846,7 +848,7 @@ function renderTimeline() {
       var e   = item.event;
       var idx = item.idx;
       html += '<div class="timeline-item">'
-        + '<div class="timeline-dot'+(e.gold?' gold':'')+'></div>'
+        + '<div class="timeline-dot'+(e.gold?' gold':'')+'"></div>'
         + '<div class="timeline-card timeline-card-wrap">'
         + '<div class="timeline-card-text">'+escapeHtml(e.text)+'</div>'
         + '<div class="timeline-card-actions">'
@@ -957,11 +959,20 @@ function closeAddModal() {
   document.getElementById('add-modal').classList.remove('open');
   document.getElementById('modal-year').value='';
   document.getElementById('modal-text').value='';
+  document.getElementById('modal-pin').value='';
+  document.getElementById('modal-pin-error').style.display='none';
 }
 function saveEvent() {
   var year = parseInt(document.getElementById('modal-year').value);
   var text = document.getElementById('modal-text').value.trim();
-  if(!year||!text){alert('Please fill in both fields.');return;}
+  var pin  = document.getElementById('modal-pin').value.trim();
+  if(!year||!text){alert('Please fill in year and description.');return;}
+  if(pin !== COMMISSIONER_PIN){
+    document.getElementById('modal-pin-error').style.display='block';
+    document.getElementById('modal-pin').value='';
+    document.getElementById('modal-pin').focus();
+    return;
+  }
   var events = loadTimeline();
   events.push({year:year,text:text});
   events.sort(function(a,b){return a.year-b.year;});
