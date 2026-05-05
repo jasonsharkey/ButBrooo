@@ -275,6 +275,17 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
 .pin-cancel{background:var(--dark3);color:var(--text-muted);}
 .pin-confirm{background:#ff4444;color:white;}
 
+
+.timeline-card-actions{display:none;position:absolute;top:6px;right:6px;gap:4px;flex-direction:column;}
+.timeline-edit-mode .timeline-card-actions{display:flex;}
+.timeline-edit-btn{
+  width:24px;height:24px;border-radius:50%;background:rgba(245,166,35,0.0);
+  border:none;color:rgba(255,255,255,0.2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:11px;transition:all 0.2s;
+}
+.timeline-edit-mode .timeline-edit-btn{color:rgba(245,166,35,0.6);background:rgba(245,166,35,0.08);}
+.timeline-edit-btn:active{background:rgba(245,166,35,0.2);color:var(--gold);}
+
 </style>
 </head>
 <body>
@@ -506,6 +517,22 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
   </div>
 </div>
 
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Event</div>
+    <input type="number" class="modal-input" id="edit-year" placeholder="Year (e.g. 2019)" min="2008" max="2099">
+    <textarea class="modal-input" id="edit-text" placeholder="Description..." rows="3" style="resize:none;"></textarea>
+    <input type="password" class="modal-input" id="edit-pin" placeholder="Commissioner PIN" maxlength="4" inputmode="numeric">
+    <div class="pin-error" id="edit-pin-error" style="margin-bottom:8px;">Incorrect PIN</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-save" onclick="confirmEdit()">Save</button>
+    </div>
+  </div>
+</div>
 <!-- PIN DELETE MODAL -->
 <div class="pin-modal-overlay" id="pin-modal">
   <div class="pin-modal">
@@ -714,41 +741,73 @@ var DEFAULT_TIMELINE = [
 ];
 
 function loadTimeline() {
-  // Merge: league_data.json timeline (from #Timeline bot) + localStorage (manual adds)
-  var base = DEFAULT_TIMELINE.slice();
+  // Load deletions and edits from localStorage
+  var deletions = [];
+  var edits     = [];
+  try { deletions = JSON.parse(localStorage.getItem('bb_timeline_deletions') || '[]'); } catch(e) {}
+  try { edits     = JSON.parse(localStorage.getItem('bb_timeline_edits')     || '[]'); } catch(e) {}
 
-  // Add events from league_data.json if available
+  // Start with defaults, apply edits, filter deletions
+  var base = DEFAULT_TIMELINE.slice().map(function(e) {
+    // Check if this event has been edited
+    var edit = edits.find(function(ed){ return ed.origYear===e.year && ed.origText===e.text; });
+    return edit ? {year:edit.newYear, text:edit.newText, gold:e.gold} : e;
+  }).filter(function(e) {
+    // Filter out deleted events (match by original year+text before edits)
+    return !deletions.some(function(d){ return d.year===e.year && d.text===e.text; });
+  });
+
+  // Add events from league_data.json
   if (LEAGUE_DATA && LEAGUE_DATA.timeline && LEAGUE_DATA.timeline.length) {
     LEAGUE_DATA.timeline.forEach(function(e) {
-      // Avoid duplicates by checking year+text
-      var exists = base.some(function(b){ return b.year===e.year && b.text===e.text; });
-      if (!exists) base.push(e);
+      var deleted = deletions.some(function(d){ return d.year===e.year && d.text===e.text; });
+      var exists  = base.some(function(b){ return b.year===e.year && b.text===e.text; });
+      if (!deleted && !exists) base.push(e);
     });
   }
 
-  // Merge localStorage additions
+  // Add user-added events from localStorage
   try {
-    var stored = localStorage.getItem('bb_timeline_additions');
-    if (stored) {
-      JSON.parse(stored).forEach(function(e) {
-        var exists = base.some(function(b){ return b.year===e.year && b.text===e.text; });
-        if (!exists) base.push(e);
-      });
-    }
+    var additions = JSON.parse(localStorage.getItem('bb_timeline_additions') || '[]');
+    additions.forEach(function(e) {
+      var deleted = deletions.some(function(d){ return d.year===e.year && d.text===e.text; });
+      var exists  = base.some(function(b){ return b.year===e.year && b.text===e.text; });
+      if (!deleted && !exists) base.push(e);
+    });
   } catch(err) {}
 
   base.sort(function(a,b){ return a.year - b.year; });
   return base;
 }
-function saveTimeline(d) {
-  // Only save user-added events to localStorage (not the defaults)
+
+function saveTimeline(events) {
+  // Store additions (non-default events)
   try {
-    var defaults = DEFAULT_TIMELINE;
-    var additions = d.filter(function(e) {
-      return !defaults.some(function(def){ return def.year===e.year && def.text===e.text; });
+    var additions = events.filter(function(e) {
+      return !DEFAULT_TIMELINE.some(function(d){ return d.year===e.year && d.text===e.text; });
     });
     localStorage.setItem('bb_timeline_additions', JSON.stringify(additions));
   } catch(e) {}
+}
+
+function saveDeletion(e) {
+  try {
+    var deletions = JSON.parse(localStorage.getItem('bb_timeline_deletions') || '[]');
+    // avoid duplicates
+    var exists = deletions.some(function(d){ return d.year===e.year && d.text===e.text; });
+    if (!exists) deletions.push({year:e.year, text:e.text});
+    localStorage.setItem('bb_timeline_deletions', JSON.stringify(deletions));
+  } catch(err) {}
+}
+
+function saveEdit(origYear, origText, newYear, newText) {
+  try {
+    var edits = JSON.parse(localStorage.getItem('bb_timeline_edits') || '[]');
+    // Remove any existing edit for this event
+    edits = edits.filter(function(ed){ return !(ed.origYear===origYear && ed.origText===origText); });
+    edits.push({origYear:origYear, origText:origText, newYear:newYear, newText:newText});
+    localStorage.setItem('bb_timeline_edits', JSON.stringify(edits));
+  } catch(err) {}
 }
 function escapeHtml(t) {
   return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -787,12 +846,17 @@ function renderTimeline() {
       var e   = item.event;
       var idx = item.idx;
       html += '<div class="timeline-item">'
-        + '<div class="timeline-dot'+(e.gold?' gold':'')+'"></div>'
+        + '<div class="timeline-dot'+(e.gold?' gold':'')+'></div>'
         + '<div class="timeline-card timeline-card-wrap">'
         + '<div class="timeline-card-text">'+escapeHtml(e.text)+'</div>'
-        + '<button class="timeline-delete-btn" onclick="promptDelete('+idx+')" title="Delete event">'
-        + '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+        + '<div class="timeline-card-actions">'
+        + '<button class="timeline-edit-btn" onclick="promptEdit('+idx+')" title="Edit event">'
+        + '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
         + '</button>'
+        + '<button class="timeline-delete-btn" onclick="promptDelete('+idx+')" title="Delete event">'
+        + '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+        + '</button>'
+        + '</div>'
         + '</div>'
         + '</div>';
     });
@@ -834,13 +898,60 @@ function confirmDelete() {
     return;
   }
   if (pendingDeleteIdx < 0) return;
-  var events = loadTimeline();
-  var removed = events.splice(pendingDeleteIdx, 1)[0];
-  // If it was a user-added event, update localStorage
+  var events  = loadTimeline();
+  var removed = events[pendingDeleteIdx];
+  if (!removed) return;
+  // Save deletion so it persists across reloads
+  saveDeletion(removed);
+  // Also remove from additions if it was user-added
+  events.splice(pendingDeleteIdx, 1);
   saveTimeline(events);
   closePinModal();
   renderTimeline();
 }
+var pendingEditIdx  = -1;
+var pendingEditOrig = null;
+
+function promptEdit(idx) {
+  if (!editModeActive) return;
+  var events = loadTimeline();
+  var e = events[idx];
+  if (!e) return;
+  pendingEditIdx  = idx;
+  pendingEditOrig = {year:e.year, text:e.text};
+  document.getElementById('edit-year').value = e.year;
+  document.getElementById('edit-text').value = e.text;
+  document.getElementById('edit-pin').value  = '';
+  document.getElementById('edit-pin-error').style.display = 'none';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEditModal() {
+  pendingEditIdx  = -1;
+  pendingEditOrig = null;
+  document.getElementById('edit-modal').classList.remove('open');
+  document.getElementById('edit-pin-error').style.display = 'none';
+}
+
+function confirmEdit() {
+  var pin  = document.getElementById('edit-pin').value.trim();
+  var year = parseInt(document.getElementById('edit-year').value);
+  var text = document.getElementById('edit-text').value.trim();
+  if (pin !== COMMISSIONER_PIN) {
+    document.getElementById('edit-pin-error').style.display = 'block';
+    document.getElementById('edit-pin').value = '';
+    return;
+  }
+  if (!year || !text) { alert('Please fill in year and description.'); return; }
+  if (!pendingEditOrig) return;
+  // Save the edit
+  saveEdit(pendingEditOrig.year, pendingEditOrig.text, year, text);
+  closeEditModal();
+  renderTimeline();
+}
+
+document.getElementById('edit-modal').addEventListener('click', function(e){ if(e.target===this) closeEditModal(); });
+
 function openAddModal()  { document.getElementById('add-modal').classList.add('open'); }
 function closeAddModal() {
   document.getElementById('add-modal').classList.remove('open');
