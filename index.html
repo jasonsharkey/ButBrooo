@@ -99,13 +99,13 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
 .stat-card-value{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);line-height:1;margin-bottom:2px;}
 .stat-card-sub{font-size:11px;color:var(--text-dim);}
 .chart-card{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;}
-.chart-wrap{position:relative;height:200px;}.chart-wrap.tall{height:360px;}
+.chart-wrap{position:relative;height:200px;}
 .filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
 .filter-btn{background:var(--dark3);border:1px solid var(--border);border-radius:16px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.15s;}
 .filter-btn.active{background:rgba(245,166,35,0.15);border-color:var(--gold);color:var(--gold);}
-.sheets-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:0.1em;cursor:pointer;text-decoration:none;margin-bottom:12px;}
-.sheets-note{background:var(--dark3);border:1px solid rgba(245,166,35,0.15);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--text-muted);line-height:1.5;}
-.sheets-note strong{color:var(--gold);}
+
+
+
 
 /* AI */
 .ai-section{background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;}
@@ -276,12 +276,135 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
     </div>
 
     <div class="stats-section-title">All-Time Avg Finish</div>
-    <div class="chart-card"><div class="chart-wrap tall"><canvas id="avgChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-wrap" style="height:380px"><canvas id="avgChart"></canvas></div></div>
 
     <div class="stats-section-title">Season Finishes by Member</div>
+    <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;padding:0 2px;">Tap multiple members to compare</p>
     <div class="chart-card">
       <div class="filter-row" id="member-filter"></div>
-      <div class="chart-wrap" style="height:240px"><canvas id="memberChart"></canvas></div>
+      <div class="chart-wrap"><canvas id="memberChart"></canvas></div>
+    </div>
+
+    <div class="stats-section-title">AI Stats Analyzer</div>
+    <div class="ai-section">
+      <div class="ai-section-header">
+        <div class="ai-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div>
+          <h3>League Analyst</h3>
+          <p>AI-powered insights from 17 seasons of data</p>
+        </div>
+      </div>
+      <div class="ai-suggestions">
+        <div class="ai-suggestion" onclick="askAI('Who has won the most championships?')">Most titles?</div>
+        <div class="ai-suggestion" onclick="askAI('Who has the most consistent finishes?')">Most consistent?</div>
+        <div class="ai-suggestion" onclick="askAI('Who has improved the most over the years?')">Most improved?</div>
+        <div class="ai-suggestion" onclick="askAI('Who has the worst overall record in league history?')">Worst record?</div>
+        <div class="ai-suggestion" onclick="askAI('Give me a fun breakdown of any rivalries in the data')">Rivalries?</div>
+        <div class="ai-suggestion" onclick="askAI('Who is most likely to win based on recent trends?')">2025 prediction?</div>
+      </div>
+      <div class="ai-prompt-row">
+        <input class="ai-input" id="ai-input" type="text" placeholder="Ask about the league data..." onkeydown="if(event.key==='Enter')sendAI()">
+        <button class="ai-send-btn" onclick="sendAI()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="ai-response" id="ai-response">
+        <div class="ai-response-text" id="ai-response-text"></div>
+      </div>
+    </div>
+
+</div>
+
+<!-- GLOBAL HEADER -->
+<div id="global-header">
+  <div class="header-page-title" id="header-title">ButBrooo</div>
+  <img src="IMG_4608.jpg" alt="BB" class="header-logo" onclick="navigate('home')"
+    onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='flex'">
+  <div class="header-logo-fallback" id="logo-fallback" onclick="navigate('home')">BB</div>
+</div>
+
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <div id="home-hero">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-logo-wrap">
+      <img src="IMG_4608.jpg" alt="ButBrooo">
+      <div class="hero-logo-fallback">BB</div>
+    </div>
+    <div class="hero-title">BUT BROOO</div>
+    <div class="hero-motto">JUST DON'T LOSE</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">17</div><div class="hero-stat-label">Seasons</div></div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat"><div class="hero-stat-num">12</div><div class="hero-stat-label">Teams</div></div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat"><div class="hero-stat-num">'08</div><div class="hero-stat-label">Founded</div></div>
+    </div>
+    <div class="hero-quick-nav">
+      <button class="hero-nav-btn" onclick="navigate('timeline')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Timeline
+      </button>
+      <button class="hero-nav-btn" onclick="navigate('stats')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Stats
+      </button>
+      <button class="hero-nav-btn" onclick="navigate('league')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>The League
+      </button>
+      <button class="hero-nav-btn" onclick="navigate('social')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>Social
+      </button>
+    </div>
+    <div class="champs-section">
+      <div class="champs-label">🏆 Hall of Champions</div>
+      <div class="champs-scroll" id="champs-scroll"></div>
+    </div>
+    <div class="social-bar">
+      <a href="https://twitter.com/butbrooo" target="_blank" class="social-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.766l7.731-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        @butbrooo
+      </a>
+      <a href="https://www.instagram.com/butbrooo/" target="_blank" class="social-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        @butbrooo
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- TIMELINE -->
+<div id="page-timeline" class="page">
+  <div class="timeline-container">
+    <p class="timeline-intro">The story of the greatest fantasy football league ever assembled. Tap <strong style="color:var(--gold)">+ Add Event</strong> to write history.</p>
+    <div id="timeline-list"></div>
+    <button class="add-event-btn" onclick="openAddModal()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Add Event
+    </button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div id="page-stats" class="page">
+  <div class="stats-wrap">
+    <div class="stats-section-title">Quick Stats</div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-card-label">Seasons</div><div class="stat-card-value">17</div><div class="stat-card-sub">2008 – 2024</div></div>
+      <div class="stat-card"><div class="stat-card-label">Teams</div><div class="stat-card-value">12</div><div class="stat-card-sub">Active Rosters</div></div>
+      <div class="stat-card"><div class="stat-card-label">Most Titles</div><div class="stat-card-value">3</div><div class="stat-card-sub">Phil (2012, 2014, 2021)</div></div>
+      <div class="stat-card"><div class="stat-card-label">Best Avg Rank</div><div class="stat-card-value">4.2</div><div class="stat-card-sub">Koslow</div></div>
+    </div>
+
+    <div class="stats-section-title">All-Time Avg Finish</div>
+    <div class="chart-card"><div class="chart-wrap" style="height:380px"><canvas id="avgChart"></canvas></div></div>
+
+    <div class="stats-section-title">Season Finishes by Member</div>
+    <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;padding:0 2px;">Tap multiple members to compare</p>
+    <div class="chart-card">
+      <div class="filter-row" id="member-filter"></div>
+      <div class="chart-wrap"><canvas id="memberChart"></canvas></div>
     </div>
 
     <div class="stats-section-title">AI Stats Analyzer</div>
@@ -407,162 +530,172 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
 </div>
 
 <script>
-// ─── LOAD REAL DATA FROM league_data.json ───
-let LEAGUE_DATA = null;
-let activeMembers = [];
-let memberChartInst = null;
-let chartsBuilt = false;
+// === ButBrooo League Website JS ===
+// Loads real data from league_data.json and powers all pages
 
-// Bios per member — edit these to update
-const MEMBER_BIOS = {
-  'Phil':   "The most decorated member in league history. Also the guy who dropped Devonta Freeman — a player of the year candidate — for a kicker in 2015. The league has not forgotten.",
-  'Koslow': "The most dominant member in recent history. Back-to-back 1st place finishes in 2020 and 2021. Best average finish in the league.",
-  'Jordan': "One of the highest win percentages in the league. Perennial contender and original era member.",
-  'Evan':   "Original league member. Champion in 2016. Gary owes him $20 and always will.",
-  'Logan':  "2017 champion. One of the longest-tenured members in the league.",
-  'Alman':  "Two-time champion. One of the founding generation of the league.",
-  'Dan':    "Consistent performer across 15+ seasons. Never the flashiest, always competitive.",
-  'Bsho':   "2011 champion. Known for back-to-back runner-up finishes. Still chasing that second title.",
-  'Shark':  "The Commissioner since 2016. Built this website. Also a former champion.",
-  'Noah':   "Joined mid-era and immediately made noise. Strong win percentage across his seasons.",
-  'Freid':  "GIRTH WIND & FIRE. Brought energy and chaos in equal measure.",
-  'Danny':  "One of the most active members. Has never won it but keeps coming back.",
-  'Dylan':  "Joined for a stretch and held his own against the league vets.",
-};
-
-const MEMBER_INITIALS = {
-  Phil:'PH', Koslow:'KO', Jordan:'JO', Evan:'EV', Logan:'LO',
-  Alman:'AL', Dan:'DN', Bsho:'BS', Shark:'SH', Noah:'NO',
-  Freid:'FR', Danny:'DA', Dylan:'DY',
-};
-
-const GOLD = '#F5A623';
-const CHART_COLORS = [
+var LEAGUE_DATA = null;
+var activeMembers = [];
+var memberChartInst = null;
+var chartsBuilt = false;
+var GOLD = '#F5A623';
+var CHART_COLORS = [
   '#F5A623','#60D394','#6CB4EE','#FF6B6B','#C77DFF',
   '#FFD166','#06D6A0','#EF476F','#118AB2','#F77F00',
   '#7B2D8B','#2EC4B6','#E76F51'
 ];
 
-async function loadData() {
-  try {
-    const r = await fetch('league_data.json');
-    if (!r.ok) throw new Error('not found');
-    LEAGUE_DATA = await r.json();
-    onDataLoaded();
-  } catch(e) {
-    console.warn('league_data.json not found, using fallback data');
-    useFallbackData();
-  }
+// Edit bios here to update member descriptions
+var MEMBER_BIOS = {
+  'Phil':   'The most decorated member in league history. Also the guy who dropped Devonta Freeman for a kicker in 2015. The league has not forgotten.',
+  'Koslow': 'The most dominant member in recent history. Back-to-back 1st place finishes in 2020 and 2021. Best average finish in the league.',
+  'Jordan': 'One of the highest win percentages in the league. Perennial contender and original era member.',
+  'Evan':   'Original league member. Champion in 2016. Gary owes him $20 and always will.',
+  'Logan':  '2017 champion. One of the longest-tenured members in the league.',
+  'Alman':  'Two-time champion. One of the founding generation of the league.',
+  'Dan':    'Consistent performer across 15+ seasons. Never the flashiest, always competitive.',
+  'Bsho':  '2011 champion. Known for back-to-back runner-up finishes. Still chasing that second title.',
+  'Shark':  'The Commissioner since 2016. Built this website. Also a former champion.',
+  'Noah':   'Joined mid-era and immediately made noise. Strong win percentage across his seasons.',
+  'Freid':  'GIRTH WIND and FIRE. Brought energy and chaos in equal measure.',
+  'Danny':  'One of the most active members. Has never won it but keeps coming back.',
+  'Dylan':  'Joined for a stretch and held his own against the league vets.'
+};
+
+var MEMBER_INITIALS = {
+  Phil:'PH', Koslow:'KO', Jordan:'JO', Evan:'EV', Logan:'LO',
+  Alman:'AL', Dan:'DN', Bsho:'BS', Shark:'SH', Noah:'NO',
+  Freid:'FR', Danny:'DA', Dylan:'DY'
+};
+
+// ── Data loading ──────────────────────────────────────────
+function loadData() {
+  fetch('league_data.json')
+    .then(function(r) {
+      if (!r.ok) throw new Error('not found');
+      return r.json();
+    })
+    .then(function(data) {
+      LEAGUE_DATA = data;
+      onDataLoaded();
+    })
+    .catch(function() {
+      console.warn('league_data.json not found, using fallback');
+      useFallbackData();
+    });
 }
 
 function onDataLoaded() {
   buildTicker();
   buildChamps();
-  renderMembers();
   updateQuickStats();
+  renderMembers();
   if (document.getElementById('page-stats').classList.contains('active')) {
     buildCharts();
   }
 }
 
-function updateQuickStats() {
-  if (!LEAGUE_DATA) return;
-  const stats = LEAGUE_DATA.alltime_stats || {};
-  const members = LEAGUE_DATA.members || [];
-  const seasons = LEAGUE_DATA.seasons || [];
-
-  // Most titles
-  let maxTitles = 0, topChamp = '';
-  let champYears = {};
-  for (const [name, s] of Object.entries(stats)) {
-    if (members.includes(name) && s.championships > maxTitles) {
-      maxTitles = s.championships;
-      topChamp = name;
-    }
-  }
-  // Find years for top champ
-  const champList = (LEAGUE_DATA.champions || []).filter(c => c.name === topChamp).map(c => c.year);
-
-  // Best avg finish
-  let bestAvg = 99, bestAvgName = '';
-  for (const [name, s] of Object.entries(stats)) {
-    if (members.includes(name) && s.avg_finish && s.avg_finish < bestAvg) {
-      bestAvg = s.avg_finish;
-      bestAvgName = name;
-    }
-  }
-
-  const cards = document.querySelectorAll('.stat-card');
-  if (cards[0]) {
-    cards[0].querySelector('.stat-card-value').textContent = seasons.length || '17';
-    cards[0].querySelector('.stat-card-sub').textContent = seasons.length ? `${seasons[0].season} – ${seasons[seasons.length-1].season}` : '2008 – 2024';
-  }
-  if (cards[1]) {
-    cards[1].querySelector('.stat-card-value').textContent = members.length || '13';
-    cards[1].querySelector('.stat-card-sub').textContent = 'Active Members';
-  }
-  if (cards[2]) {
-    cards[2].querySelector('.stat-card-value').textContent = maxTitles || '–';
-    cards[2].querySelector('.stat-card-sub').textContent = `${topChamp} (${champList.slice(0,3).join(', ')})`;
-  }
-  if (cards[3]) {
-    cards[3].querySelector('.stat-card-value').textContent = bestAvg || '–';
-    cards[3].querySelector('.stat-card-sub').textContent = bestAvgName;
-  }
-}
-
-function getMemberStats(name) {
-  if (!LEAGUE_DATA) return null;
-  return (LEAGUE_DATA.alltime_stats || {})[name] || null;
-}
-
-function getFinishGrid() {
-  if (!LEAGUE_DATA) return {};
-  return LEAGUE_DATA.finish_grid || {};
+function useFallbackData() {
+  buildTicker();
+  buildChamps();
+  renderMembers();
 }
 
 function getMembers() {
-  if (!LEAGUE_DATA) return ['Phil','Koslow','Jordan','Evan','Logan','Alman','Dan','Bsho','Shark','Noah','Freid','Danny','Dylan'];
-  return LEAGUE_DATA.members || [];
+  return (LEAGUE_DATA && LEAGUE_DATA.members) ? LEAGUE_DATA.members :
+    ['Phil','Koslow','Jordan','Evan','Logan','Alman','Dan','Bsho','Shark','Noah','Freid','Danny','Dylan'];
 }
 
 function getChampions() {
-  if (!LEAGUE_DATA) return [];
-  return LEAGUE_DATA.champions || [];
+  return (LEAGUE_DATA && LEAGUE_DATA.champions) ? LEAGUE_DATA.champions : [];
 }
 
-// ─── TICKER ───
+function getFinishGrid() {
+  return (LEAGUE_DATA && LEAGUE_DATA.finish_grid) ? LEAGUE_DATA.finish_grid : {};
+}
+
+function getAllStats() {
+  return (LEAGUE_DATA && LEAGUE_DATA.alltime_stats) ? LEAGUE_DATA.alltime_stats : {};
+}
+
+// ── Quick stats cards ─────────────────────────────────────
+function updateQuickStats() {
+  if (!LEAGUE_DATA) return;
+  var stats   = getAllStats();
+  var members = getMembers();
+  var seasons = LEAGUE_DATA.seasons || [];
+  var champs  = getChampions();
+
+  var maxTitles = 0, topChamp = '', bestAvg = 99, bestAvgName = '';
+  members.forEach(function(n) {
+    var s = stats[n];
+    if (!s) return;
+    if (s.championships > maxTitles) { maxTitles = s.championships; topChamp = n; }
+    if (s.avg_finish && s.avg_finish < bestAvg) { bestAvg = s.avg_finish; bestAvgName = n; }
+  });
+
+  var champYears = champs.filter(function(c){return c.name===topChamp;}).map(function(c){return c.year;});
+  var yearRange  = seasons.length ? seasons[0].season + ' - ' + seasons[seasons.length-1].season : '2008 - 2024';
+
+  var cards = document.querySelectorAll('.stat-card');
+  if (cards[0]) {
+    cards[0].querySelector('.stat-card-value').textContent = seasons.length || '17';
+    cards[0].querySelector('.stat-card-sub').textContent   = yearRange;
+  }
+  if (cards[1]) {
+    cards[1].querySelector('.stat-card-value').textContent = members.length || '13';
+    cards[1].querySelector('.stat-card-sub').textContent   = 'Active Members';
+  }
+  if (cards[2]) {
+    cards[2].querySelector('.stat-card-value').textContent = maxTitles || '-';
+    cards[2].querySelector('.stat-card-sub').textContent   = topChamp + ' (' + champYears.slice(0,3).join(', ') + ')';
+  }
+  if (cards[3]) {
+    cards[3].querySelector('.stat-card-value').textContent = bestAvg || '-';
+    cards[3].querySelector('.stat-card-sub').textContent   = bestAvgName;
+  }
+}
+
+// ── Ticker ────────────────────────────────────────────────
 function buildTicker() {
-  const champs = getChampions();
-  const items = ['🏈 JUST DON'T LOSE','★ EST. 2008','🏆 BUT BROOO FANTASY FOOTBALL','⚡ 13 TEAMS · 17 SEASONS'];
-  champs.slice(-7).reverse().forEach(c => items.push(`🥇 ${c.year} CHAMP: ${c.name.toUpperCase()}`));
-  items.push('🔥 BOBBY FRIEDS FATHERLY TROPHY','💀 JUST DON'T LOSE BRO');
-  const all = [...items, ...items];
-  document.getElementById('ticker-inner').innerHTML = all.map(t => `<span class="ticker-item">${t}</span>`).join('');
+  var champs = getChampions();
+  var items  = [
+    'JUST DON\'T LOSE',
+    'EST. 2008',
+    'BUT BROOO FANTASY FOOTBALL',
+    '13 TEAMS - 17 SEASONS'
+  ];
+  champs.slice(-7).reverse().forEach(function(c) {
+    items.push(c.year + ' CHAMP: ' + c.name.toUpperCase());
+  });
+  items.push('BOBBY FRIEDS FATHERLY TROPHY', 'JUST DON\'T LOSE BRO');
+  var all = items.concat(items);
+  document.getElementById('ticker-inner').innerHTML =
+    all.map(function(t) { return '<span class="ticker-item">' + t + '</span>'; }).join('');
 }
 
-// ─── CHAMPS SCROLL ───
+// ── Champions scroll ──────────────────────────────────────
 function buildChamps() {
-  const champs = getChampions();
-  document.getElementById('champs-scroll').innerHTML = champs.slice().reverse().map(c =>
-    `<div class="champ-pill"><span>${c.year}</span> ${c.name}</div>`
-  ).join('');
+  var champs = getChampions();
+  document.getElementById('champs-scroll').innerHTML =
+    champs.slice().reverse().map(function(c) {
+      return '<div class="champ-pill"><span>' + c.year + '</span> ' + c.name + '</div>';
+    }).join('');
 }
 
-// ─── NAVIGATION ───
-const PAGE_TITLES = {home:'ButBrooo',timeline:'The Timeline',stats:'The Stats',league:'The League',social:'Follow Us'};
+// ── Navigation ────────────────────────────────────────────
+var PAGE_TITLES = {home:'ButBrooo',timeline:'The Timeline',stats:'The Stats',league:'The League',social:'Follow Us'};
 function navigate(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page).classList.add('active');
+  document.getElementById('nav-'  + page).classList.add('active');
   document.getElementById('header-title').textContent = PAGE_TITLES[page];
   document.getElementById('page-' + page).scrollTop = 0;
   if (page === 'stats' && !chartsBuilt && LEAGUE_DATA) buildCharts();
 }
 
-// ─── TIMELINE ───
-const DEFAULT_TIMELINE=[
+// ── Timeline ──────────────────────────────────────────────
+var DEFAULT_TIMELINE = [
   {year:2008,text:'The establishment of a commissioner and THE league',gold:true},
   {year:2009,text:'The dismissal of Fringe Guy Gary, who still owes Evan $20'},
   {year:2009,text:'Jake Miller drafting a kicker in the 3rd round'},
@@ -579,62 +712,76 @@ const DEFAULT_TIMELINE=[
   {year:2018,text:'Website created'},
   {year:2019,text:'Second and Third official sponsors (Meyers Soap and Otterbox)'},
   {year:2019,text:'The Gurley Drop'},
-  {year:2019,text:'The Antonio Brown trade debacle'},
+  {year:2019,text:'The Antonio Brown trade debacle'}
 ];
-function loadTimeline(){try{const s=localStorage.getItem('bb_timeline');return s?JSON.parse(s):DEFAULT_TIMELINE;}catch(e){return DEFAULT_TIMELINE;}}
-function saveTimeline(d){try{localStorage.setItem('bb_timeline',JSON.stringify(d));}catch(e){}}
-function escapeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function renderTimeline(){
-  const events=loadTimeline();
-  const byYear={};
-  events.forEach(e=>{if(!byYear[e.year])byYear[e.year]=[];byYear[e.year].push(e);});
-  const years=Object.keys(byYear).sort((a,b)=>a-b);
-  let html='';
-  years.forEach(year=>{
-    html+=`<div class="timeline-year-group"><div class="timeline-year-label">${year}</div><div class="timeline-items">`;
-    byYear[year].forEach(e=>{html+=`<div class="timeline-item"><div class="timeline-dot${e.gold?' gold':''}"></div><div class="timeline-card"><div class="timeline-card-text">${escapeHtml(e.text)}</div></div></div>`;});
-    html+='</div></div>';
-  });
-  document.getElementById('timeline-list').innerHTML=html;
+
+function loadTimeline() {
+  try { var s=localStorage.getItem('bb_timeline'); return s?JSON.parse(s):DEFAULT_TIMELINE; }
+  catch(e) { return DEFAULT_TIMELINE; }
 }
-function openAddModal(){document.getElementById('add-modal').classList.add('open');}
-function closeAddModal(){document.getElementById('add-modal').classList.remove('open');document.getElementById('modal-year').value='';document.getElementById('modal-text').value='';}
-function saveEvent(){
-  const year=parseInt(document.getElementById('modal-year').value);
-  const text=document.getElementById('modal-text').value.trim();
+function saveTimeline(d) {
+  try { localStorage.setItem('bb_timeline',JSON.stringify(d)); } catch(e) {}
+}
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function renderTimeline() {
+  var events = loadTimeline();
+  var byYear = {};
+  events.forEach(function(e) { if(!byYear[e.year]) byYear[e.year]=[]; byYear[e.year].push(e); });
+  var years = Object.keys(byYear).sort(function(a,b){return a-b;});
+  var html = '';
+  years.forEach(function(year) {
+    html += '<div class="timeline-year-group"><div class="timeline-year-label">'+year+'</div><div class="timeline-items">';
+    byYear[year].forEach(function(e) {
+      html += '<div class="timeline-item"><div class="timeline-dot'+(e.gold?' gold':'')+'"></div><div class="timeline-card"><div class="timeline-card-text">'+escapeHtml(e.text)+'</div></div></div>';
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('timeline-list').innerHTML = html;
+}
+function openAddModal()  { document.getElementById('add-modal').classList.add('open'); }
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+  document.getElementById('modal-year').value='';
+  document.getElementById('modal-text').value='';
+}
+function saveEvent() {
+  var year = parseInt(document.getElementById('modal-year').value);
+  var text = document.getElementById('modal-text').value.trim();
   if(!year||!text){alert('Please fill in both fields.');return;}
-  const events=loadTimeline();
-  events.push({year,text});
-  events.sort((a,b)=>a.year-b.year);
+  var events = loadTimeline();
+  events.push({year:year,text:text});
+  events.sort(function(a,b){return a.year-b.year;});
   saveTimeline(events);
   renderTimeline();
   closeAddModal();
 }
-document.getElementById('add-modal').addEventListener('click',function(e){if(e.target===this)closeAddModal();});
+document.getElementById('add-modal').addEventListener('click', function(e){ if(e.target===this) closeAddModal(); });
 renderTimeline();
 
-// ─── CHARTS ───
+// ── Charts ────────────────────────────────────────────────
 function buildCharts() {
   chartsBuilt = true;
-  const members = getMembers();
-  const allStats = LEAGUE_DATA ? LEAGUE_DATA.alltime_stats || {} : {};
-  const grid = getFinishGrid();
+  var members  = getMembers();
+  var allStats = getAllStats();
+  var grid     = getFinishGrid();
 
-  // Sort members by avg finish (lower = better)
-  const sorted = members.slice().filter(n => allStats[n] && allStats[n].avg_finish)
-    .sort((a,b) => allStats[a].avg_finish - allStats[b].avg_finish);
+  // Sort by avg finish ascending (lower = better)
+  var sorted = members.slice().filter(function(n){ return allStats[n] && allStats[n].avg_finish; });
+  sorted.sort(function(a,b){ return allStats[a].avg_finish - allStats[b].avg_finish; });
 
-  // Avg finish chart — horizontal bar, tall enough for all names
-  const avgCtx = document.getElementById('avgChart').getContext('2d');
+  // (1) Avg finish bar chart - horizontal, tall so all names visible
+  var avgCtx = document.getElementById('avgChart').getContext('2d');
   new Chart(avgCtx, {
     type: 'bar',
     data: {
       labels: sorted,
       datasets: [{
-        data: sorted.map(n => allStats[n] ? allStats[n].avg_finish : null),
-        backgroundColor: sorted.map((_,i) => i===0 ? GOLD : 'rgba(245,166,35,0.22)'),
-        borderColor:     sorted.map((_,i) => i===0 ? GOLD : 'rgba(245,166,35,0.5)'),
-        borderWidth: 1, borderRadius: 4,
+        data: sorted.map(function(n){ return allStats[n] ? allStats[n].avg_finish : null; }),
+        backgroundColor: sorted.map(function(_,i){ return i===0 ? GOLD : 'rgba(245,166,35,0.22)'; }),
+        borderColor:     sorted.map(function(_,i){ return i===0 ? GOLD : 'rgba(245,166,35,0.5)'; }),
+        borderWidth: 1, borderRadius: 4
       }]
     },
     options: {
@@ -642,263 +789,277 @@ function buildCharts() {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: {display:false},
-        tooltip: {callbacks:{label: c => `Avg: ${c.raw} (1=best)`}}
+        tooltip: {callbacks:{label:function(c){return 'Avg: '+c.raw+' (1=best)';}}}
       },
       scales: {
-        x: {
-          min: 1, max: 13,
-          ticks: {color:'rgba(255,255,255,0.45)', font:{size:10}},
-          grid: {color:'rgba(255,255,255,0.05)'}
+        x: { min:1, max:13,
+          ticks:{color:'rgba(255,255,255,0.45)',font:{size:10}},
+          grid:{color:'rgba(255,255,255,0.05)'}
         },
         y: {
-          ticks: {color:'rgba(255,255,255,0.75)', font:{size:11}},
-          grid: {display:false}
+          ticks:{color:'rgba(255,255,255,0.75)',font:{size:11}},
+          grid:{display:false}
         }
       }
     }
   });
 
-  // Multi-select member filter
+  // (2) Multi-select season finishes
   activeMembers = members.length > 0 ? [members[0]] : [];
-  const filterRow = document.getElementById('member-filter');
-  filterRow.innerHTML = members.map(n =>
-    `<button class="filter-btn${activeMembers.includes(n) ? ' active' : ''}" onclick="toggleMember('${n}')">${n}</button>`
-  ).join('');
+  var filterRow = document.getElementById('member-filter');
+  filterRow.innerHTML = members.map(function(n) {
+    var isActive = activeMembers.indexOf(n) > -1;
+    return '<button class="filter-btn'+(isActive?' active':'')+'" onclick="toggleMember(\''+n+'\')">' + n + '</button>';
+  }).join('');
   buildMemberChart();
 }
 
 function toggleMember(name) {
-  if (activeMembers.includes(name)) {
-    if (activeMembers.length === 1) return; // keep at least one
-    activeMembers = activeMembers.filter(m => m !== name);
+  var idx = activeMembers.indexOf(name);
+  if (idx > -1) {
+    if (activeMembers.length === 1) return;
+    activeMembers.splice(idx, 1);
   } else {
     activeMembers.push(name);
   }
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.toggle('active', activeMembers.includes(b.textContent));
+  document.querySelectorAll('.filter-btn').forEach(function(b) {
+    b.classList.toggle('active', activeMembers.indexOf(b.textContent) > -1);
   });
   buildMemberChart();
 }
 
 function buildMemberChart() {
-  const ctx = document.getElementById('memberChart').getContext('2d');
+  var ctx  = document.getElementById('memberChart').getContext('2d');
   if (memberChartInst) memberChartInst.destroy();
-  const grid = getFinishGrid();
+  var grid = getFinishGrid();
 
-  // Collect all years across selected members
-  const allYears = new Set();
-  activeMembers.forEach(name => {
-    const finishes = grid[name] || {};
-    Object.keys(finishes).forEach(y => allYears.add(y));
+  var allYears = {};
+  activeMembers.forEach(function(name) {
+    var finishes = grid[name] || {};
+    Object.keys(finishes).forEach(function(y){ allYears[y] = true; });
   });
-  const years = [...allYears].sort();
+  var years = Object.keys(allYears).sort();
 
-  const datasets = activeMembers.map((name, i) => {
-    const finishes = grid[name] || {};
+  var datasets = activeMembers.map(function(name, i) {
+    var finishes = grid[name] || {};
     return {
       label: name,
-      data: years.map(y => finishes[y] || null),
-      borderColor: CHART_COLORS[i % CHART_COLORS.length],
-      backgroundColor: CHART_COLORS[i % CHART_COLORS.length] + '15',
+      data:  years.map(function(y){ return finishes[y] || null; }),
+      borderColor:      CHART_COLORS[i % CHART_COLORS.length],
+      backgroundColor:  CHART_COLORS[i % CHART_COLORS.length] + '15',
       pointBackgroundColor: CHART_COLORS[i % CHART_COLORS.length],
-      pointRadius: 5, tension: 0.3, fill: false,
-      spanGaps: true,
+      pointRadius: 5, tension: 0.3, fill: false, spanGaps: true
     };
   });
 
   memberChartInst = new Chart(ctx, {
     type: 'line',
-    data: {labels: years, datasets},
+    data: {labels: years, datasets: datasets},
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
         legend: {
           display: activeMembers.length > 1,
-          labels: {color:'rgba(255,255,255,0.7)', font:{size:10}, boxWidth:12}
+          labels: {color:'rgba(255,255,255,0.7)',font:{size:10},boxWidth:12}
         }
       },
       scales: {
         y: {
           reverse: true, min: 1, max: 13,
-          ticks: {color:'rgba(255,255,255,0.45)', font:{size:10}, stepSize:2},
-          grid: {color:'rgba(255,255,255,0.05)'},
-          title: {display:true, text:'Finish (1=best)', color:'rgba(255,255,255,0.35)', font:{size:9}}
+          ticks:{color:'rgba(255,255,255,0.45)',font:{size:10},stepSize:2},
+          grid:{color:'rgba(255,255,255,0.05)'},
+          title:{display:true,text:'Finish (1=best)',color:'rgba(255,255,255,0.35)',font:{size:9}}
         },
         x: {
-          ticks: {color:'rgba(255,255,255,0.45)', font:{size:10}},
-          grid: {display:false}
+          ticks:{color:'rgba(255,255,255,0.45)',font:{size:10}},
+          grid:{display:false}
         }
       }
     }
   });
 }
 
-// ─── LEAGUE MEMBERS ───
-function trophies(n) {
-  return '🏆'.repeat(Math.min(n, 5));
+// ── League members ────────────────────────────────────────
+function makeTrophies(n) {
+  var out = '';
+  for (var i = 0; i < Math.min(n, 6); i++) out += '\uD83C\uDFC6';
+  return out;
 }
 
 function renderMembers() {
-  const members = getMembers();
-  const allStats = LEAGUE_DATA ? LEAGUE_DATA.alltime_stats || {} : {};
-  const champs = getChampions();
+  var members  = getMembers();
+  var allStats = getAllStats();
+  var champs   = getChampions();
+  var list     = document.getElementById('members-list');
 
-  const list = document.getElementById('members-list');
-  list.innerHTML = members.map((name, i) => {
-    const s = allStats[name] || {};
-    const titles = s.championships || 0;
-    const initials = MEMBER_INITIALS[name] || name.slice(0,2).toUpperCase();
-    const avgFinish = s.avg_finish || '–';
-    const wins = s.wins || 0;
-    const losses = s.losses || 0;
-    const winPct = s.win_pct ? (s.win_pct * 100).toFixed(0) + '%' : '–';
-    const champYears = champs.filter(c => c.name === name).map(c => c.year);
-    const subtitle = titles > 0
-      ? `${titles}x Champ (${champYears.join(', ')}) · Avg Finish: ${avgFinish}`
-      : `Avg Finish: ${avgFinish} · Win%: ${winPct}`;
-    const badge = titles > 0
-      ? `<div class="member-badge badge-champ">${trophies(titles)} ${titles}x</div>`
+  list.innerHTML = members.map(function(name, i) {
+    var s        = allStats[name] || {};
+    var titles   = s.championships || 0;
+    var initials = MEMBER_INITIALS[name] || name.slice(0,2).toUpperCase();
+    var avg      = s.avg_finish || '-';
+    var winPct   = s.win_pct ? Math.round(s.win_pct * 100) + '%' : '-';
+    var champYrs = champs.filter(function(c){return c.name===name;}).map(function(c){return c.year;});
+    var subtitle = titles > 0
+      ? titles + 'x Champ (' + champYrs.join(', ') + ') - Avg: ' + avg
+      : 'Avg Finish: ' + avg + ' - Win%: ' + winPct;
+    var trophyStr = titles > 0 ? ' ' + makeTrophies(titles) : '';
+    var badge = titles > 0
+      ? '<div class="member-badge badge-champ">' + makeTrophies(titles) + ' ' + titles + 'x</div>'
       : (name === 'Shark' ? '<div class="member-badge badge-comm">Commish</div>' : '');
 
-    return `<div class="member-card" onclick="showMember('${name}')">
-      <div class="member-avatar">${initials}</div>
-      <div class="member-info">
-        <div class="member-name">${name}</div>
-        <div class="member-team">${subtitle}</div>
-      </div>
-      ${badge}
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>`;
+    return '<div class="member-card" onclick="showMember(\'' + name + '\')">'
+      + '<div class="member-avatar">' + initials + '</div>'
+      + '<div class="member-info">'
+      + '<div class="member-name">' + name + trophyStr + '</div>'
+      + '<div class="member-team">' + subtitle + '</div>'
+      + '</div>'
+      + badge
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>'
+      + '</div>';
   }).join('');
 }
 
 function showMember(name) {
-  const allStats = LEAGUE_DATA ? LEAGUE_DATA.alltime_stats || {} : {};
-  const champs = getChampions();
-  const grid = getFinishGrid();
-  const s = allStats[name] || {};
-  const initials = MEMBER_INITIALS[name] || name.slice(0,2).toUpperCase();
-  const titles = s.championships || 0;
-  const champYears = champs.filter(c => c.name === name).map(c => c.year);
-  const avg = s.avg_finish || '–';
-  const best = s.best_finish || '–';
-  const worst = s.worst_finish || '–';
-  const wins = s.wins || 0;
-  const losses = s.losses || 0;
-  const ties = s.ties || 0;
-  const winPct = s.win_pct ? (s.win_pct * 100).toFixed(1) + '%' : '–';
-  const seasons = s.seasons || 0;
-  const pf = s.avg_fpts_per_season ? s.avg_fpts_per_season.toFixed(1) : '–';
-  const bio = MEMBER_BIOS[name] || `${name} has been a member of the ButBrooo league.`;
-  const trophyStr = titles > 0 ? `<div style="font-size:24px;text-align:center;margin-bottom:8px;">${'🏆'.repeat(titles)}</div>` : '';
-  const champYearsStr = champYears.length > 0
-    ? `<div style="text-align:center;font-size:12px;color:var(--gold);margin-bottom:12px;">Champion: ${champYears.join(', ')}</div>` : '';
+  var allStats = getAllStats();
+  var champs   = getChampions();
+  var grid     = getFinishGrid();
+  var s        = allStats[name] || {};
+  var initials = MEMBER_INITIALS[name] || name.slice(0,2).toUpperCase();
+  var titles   = s.championships || 0;
+  var champYrs = champs.filter(function(c){return c.name===name;}).map(function(c){return c.year;});
+  var avg      = s.avg_finish || '-';
+  var best     = s.best_finish || '-';
+  var wins     = s.wins || 0;
+  var losses   = s.losses || 0;
+  var seasons  = s.seasons || 0;
+  var winPct   = s.win_pct ? (s.win_pct * 100).toFixed(1) + '%' : '-';
+  var bio      = MEMBER_BIOS[name] || name + ' has been a member of the ButBrooo league.';
 
-  // Season finishes table
-  const finishes = grid[name] || {};
-  const finishRows = Object.entries(finishes).sort((a,b)=>a[0]-b[0]).map(([yr, place]) => {
-    const isChamp = place === 1;
-    return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);">
-      <span style="color:var(--text-muted);font-size:12px;">${yr}</span>
-      <span style="font-weight:600;font-size:12px;color:${isChamp?'var(--gold)':'var(--text-dim)'};">${isChamp?'🏆 1st':place===2?'🥈 2nd':place===3?'🥉 3rd':place+'th'}</span>
-    </div>`;
+  var trophyHtml = titles > 0
+    ? '<div style="font-size:22px;text-align:center;margin-bottom:6px;">' + makeTrophies(titles) + '</div>'
+    + '<div style="text-align:center;font-size:12px;color:var(--gold);margin-bottom:12px;">Champion: ' + champYrs.join(', ') + '</div>'
+    : '';
+
+  // Season history table
+  var finishes   = grid[name] || {};
+  var finishRows = Object.keys(finishes).sort().map(function(yr) {
+    var place = finishes[yr];
+    var label = place === 1 ? '\uD83C\uDFC6 1st'
+              : place === 2 ? '\uD83E\uDD48 2nd'
+              : place === 3 ? '\uD83E\uDD49 3rd'
+              : place + 'th';
+    var color = place === 1 ? 'var(--gold)' : 'var(--text-dim)';
+    return '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);">'
+      + '<span style="color:var(--text-muted);font-size:12px;">' + yr + '</span>'
+      + '<span style="font-weight:600;font-size:12px;color:' + color + ';">' + label + '</span>'
+      + '</div>';
   }).join('');
 
-  document.getElementById('member-modal-content').innerHTML = `
-    <div class="modal-handle" style="margin-bottom:14px;"></div>
-    <div class="detail-avatar">${initials}</div>
-    <div class="detail-name">${name}</div>
-    ${trophyStr}
-    ${champYearsStr}
-    <div class="detail-stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:10px;">
-      <div class="detail-stat"><div class="detail-stat-val">${titles}</div><div class="detail-stat-lbl">Titles</div></div>
-      <div class="detail-stat"><div class="detail-stat-val">${avg}</div><div class="detail-stat-lbl">Avg Rank</div></div>
-      <div class="detail-stat"><div class="detail-stat-val">${best}</div><div class="detail-stat-lbl">Best</div></div>
-    </div>
-    <div class="detail-stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px;">
-      <div class="detail-stat"><div class="detail-stat-val">${seasons}</div><div class="detail-stat-lbl">Seasons</div></div>
-      <div class="detail-stat"><div class="detail-stat-val">${winPct}</div><div class="detail-stat-lbl">Win %</div></div>
-      <div class="detail-stat"><div class="detail-stat-val">${wins}-${losses}</div><div class="detail-stat-lbl">W-L</div></div>
-    </div>
-    <div class="detail-bio" style="margin-bottom:14px;">${bio}</div>
-    ${finishRows ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--gold);letter-spacing:0.05em;margin-bottom:8px;">Season History</div><div style="background:var(--dark3);border-radius:8px;padding:12px;margin-bottom:14px;">${finishRows}</div>` : ''}
-    <button class="close-detail" onclick="closeMemberModal()">Close</button>`;
+  var historyHtml = finishRows
+    ? '<div style="font-family:\'Bebas Neue\',sans-serif;font-size:15px;color:var(--gold);letter-spacing:0.05em;margin-bottom:8px;">Season History</div>'
+      + '<div style="background:var(--dark3);border-radius:8px;padding:12px;margin-bottom:14px;">' + finishRows + '</div>'
+    : '';
+
+  document.getElementById('member-modal-content').innerHTML =
+    '<div class="modal-handle" style="margin-bottom:14px;"></div>'
+    + '<div class="detail-avatar">' + initials + '</div>'
+    + '<div class="detail-name">' + name + '</div>'
+    + trophyHtml
+    + '<div class="detail-stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:10px;">'
+      + '<div class="detail-stat"><div class="detail-stat-val">' + titles + '</div><div class="detail-stat-lbl">Titles</div></div>'
+      + '<div class="detail-stat"><div class="detail-stat-val">' + avg   + '</div><div class="detail-stat-lbl">Avg Rank</div></div>'
+      + '<div class="detail-stat"><div class="detail-stat-val">' + best  + '</div><div class="detail-stat-lbl">Best</div></div>'
+    + '</div>'
+    + '<div class="detail-stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px;">'
+      + '<div class="detail-stat"><div class="detail-stat-val">' + seasons + '</div><div class="detail-stat-lbl">Seasons</div></div>'
+      + '<div class="detail-stat"><div class="detail-stat-val">' + winPct  + '</div><div class="detail-stat-lbl">Win %</div></div>'
+      + '<div class="detail-stat"><div class="detail-stat-val">' + wins + '-' + losses + '</div><div class="detail-stat-lbl">W-L</div></div>'
+    + '</div>'
+    + '<div class="detail-bio" style="margin-bottom:14px;">' + bio + '</div>'
+    + historyHtml
+    + '<button class="close-detail" onclick="closeMemberModal()">Close</button>';
+
   document.getElementById('member-modal').classList.add('open');
 }
-function closeMemberModal(){document.getElementById('member-modal').classList.remove('open');}
-document.getElementById('member-modal').addEventListener('click',function(e){if(e.target===this)closeMemberModal();});
 
-// ─── AI ANALYZER ───
+function closeMemberModal() { document.getElementById('member-modal').classList.remove('open'); }
+document.getElementById('member-modal').addEventListener('click', function(e){ if(e.target===this) closeMemberModal(); });
+
+// ── AI Analyzer ───────────────────────────────────────────
 function buildAIContext() {
-  if (!LEAGUE_DATA) return 'ButBrooo Fantasy Football League est. 2008. JUST DON'T LOSE.';
-  const stats = LEAGUE_DATA.alltime_stats || {};
-  const members = LEAGUE_DATA.members || [];
-  const champs = LEAGUE_DATA.champions || [];
-  const h2h = LEAGUE_DATA.alltime_h2h || {};
+  if (!LEAGUE_DATA) return 'ButBrooo Fantasy Football League est. 2008. Motto: JUST DON\'T LOSE.';
+  var stats   = getAllStats();
+  var members = getMembers();
+  var champs  = getChampions();
+  var h2h     = LEAGUE_DATA.alltime_h2h || {};
 
-  const champStr = champs.map(c => `${c.year}:${c.name}`).join(', ');
-  const statsStr = members.map(n => {
-    const s = stats[n];
+  var champStr = champs.map(function(c){ return c.year + ':' + c.name; }).join(', ');
+
+  var statsStr = members.map(function(n) {
+    var s = stats[n];
     if (!s) return '';
-    return `${n}(${s.seasons}seasons,${s.championships}titles,avg${s.avg_finish},win%${s.win_pct},${s.wins}W-${s.losses}L)`;
+    return n + '(' + s.seasons + 'seasons,' + s.championships + 'titles,avg' + s.avg_finish + ',win%' + s.win_pct + ',' + s.wins + 'W-' + s.losses + 'L)';
   }).filter(Boolean).join('; ');
 
-  const h2hStr = Object.entries(h2h).slice(0,8).map(([a, opps]) =>
-    Object.entries(opps).slice(0,3).map(([b, rec]) =>
-      `${a}vs${b}:${rec.wins}W-${rec.losses}L`).join(',')
-  ).join('; ');
-
-  return `You are the trash-talk-friendly official stats analyst for the ButBrooo Fantasy Football League (est. 2008). Answer questions in a fun, sharp, slightly irreverent tone. Keep responses under 150 words. Use this REAL league data:
-
-CHAMPIONS (year:winner): ${champStr}
-
-MEMBER STATS (name, seasons, titles, avg_finish lower=better, win%, W-L):
-${statsStr}
-
-HEAD-TO-HEAD SAMPLES: ${h2hStr}
-
-NOTABLE FACTS: Phil dropped Devonta Freeman for a kicker in 2015. Fringe Guy Gary was dismissed in 2009 and owes Evan $20. Jake Miller drafted a kicker in round 3 (2009). League motto: JUST DON'T LOSE. Commissioner since 2016: Shark (Jason Sharkey).`;
-}
-
-async function askAI(q){document.getElementById('ai-input').value=q;sendAI();}
-async function sendAI(){
-  const q=document.getElementById('ai-input').value.trim();
-  if(!q)return;
-  const resp=document.getElementById('ai-response');
-  const textEl=document.getElementById('ai-response-text');
-  resp.classList.add('visible');
-  textEl.innerHTML='<div class="ai-loading">Analyzing real league data <div class="ai-dots"><span></span><span></span><span></span></div></div>';
-  try{
-    const context = buildAIContext();
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:context,
-        messages:[{role:'user',content:q}]
-      })
+  var h2hParts = [];
+  Object.keys(h2h).slice(0,8).forEach(function(a) {
+    Object.keys(h2h[a]).slice(0,3).forEach(function(b) {
+      var rec = h2h[a][b];
+      h2hParts.push(a + 'vs' + b + ':' + rec.wins + 'W-' + rec.losses + 'L');
     });
-    const data=await res.json();
-    const text=data.content?.map(b=>b.text||'').join('')||'Could not get a response.';
-    textEl.innerHTML=text.replace(/
-/g,'<br>');
-  }catch(e){
-    textEl.innerHTML='<em style="color:rgba(255,255,255,0.35)">Unable to reach AI — check your connection and that the page is served over HTTPS.</em>';
-  }
+  });
+
+  return 'You are the trash-talk-friendly official stats analyst for the ButBrooo Fantasy Football League (est. 2008). '
+    + 'Answer questions in a fun, sharp, slightly irreverent tone. Keep responses under 150 words. '
+    + 'Use this REAL league data:\n\n'
+    + 'CHAMPIONS: ' + champStr + '\n\n'
+    + 'MEMBER STATS (name,seasons,titles,avg_finish lower=better,win%,W-L):\n' + statsStr + '\n\n'
+    + 'HEAD-TO-HEAD: ' + h2hParts.join('; ') + '\n\n'
+    + 'NOTABLE FACTS: Phil dropped Devonta Freeman for a kicker in 2015. '
+    + 'Fringe Guy Gary was dismissed in 2009 and owes Evan $20. '
+    + 'Jake Miller drafted a kicker in round 3 (2009). '
+    + "League motto: JUST DON'T LOSE. Commissioner since 2016: Shark.";
 }
 
-// ─── FALLBACK (if no league_data.json yet) ───
-function useFallbackData() {
-  buildTicker();
-  buildChamps();
-  renderMembers();
+function askAI(q) { document.getElementById('ai-input').value = q; sendAI(); }
+function sendAI() {
+  var q = document.getElementById('ai-input').value.trim();
+  if (!q) return;
+  var resp   = document.getElementById('ai-response');
+  var textEl = document.getElementById('ai-response-text');
+  resp.classList.add('visible');
+  textEl.innerHTML = '<div class="ai-loading">Analyzing real league data <div class="ai-dots"><span></span><span></span><span></span></div></div>';
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: buildAIContext(),
+      messages: [{role:'user', content:q}]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var text = (data.content || []).map(function(b){ return b.text || ''; }).join('') || 'Could not get a response.';
+    textEl.innerHTML = text.replace(/\n/g,'<br>');
+  })
+  .catch(function(){
+    textEl.innerHTML = '<em style="color:rgba(255,255,255,0.35)">Unable to reach AI. Check your connection.</em>';
+  });
 }
 
-// ─── SERVICE WORKER ───
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+// ── Service worker ────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
 
-// ─── BOOT ───
+// ── Boot ──────────────────────────────────────────────────
 loadData();
+
 </script>
+</body>
+</html>
