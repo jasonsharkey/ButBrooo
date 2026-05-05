@@ -99,7 +99,7 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
 .stat-card-value{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);line-height:1;margin-bottom:2px;}
 .stat-card-sub{font-size:11px;color:var(--text-dim);}
 .chart-card{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;}
-.chart-wrap{position:relative;height:200px;}
+.chart-wrap{position:relative;height:200px;}.chart-wrap.tall{height:360px;}
 .filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
 .filter-btn{background:var(--dark3);border:1px solid var(--border);border-radius:16px;padding:4px 10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.15s;}
 .filter-btn.active{background:rgba(245,166,35,0.15);border-color:var(--gold);color:var(--gold);}
@@ -276,12 +276,12 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
     </div>
 
     <div class="stats-section-title">All-Time Avg Finish</div>
-    <div class="chart-card"><div class="chart-wrap"><canvas id="avgChart"></canvas></div></div>
+    <div class="chart-card"><div class="chart-wrap tall"><canvas id="avgChart"></canvas></div></div>
 
     <div class="stats-section-title">Season Finishes by Member</div>
     <div class="chart-card">
       <div class="filter-row" id="member-filter"></div>
-      <div class="chart-wrap"><canvas id="memberChart"></canvas></div>
+      <div class="chart-wrap" style="height:240px"><canvas id="memberChart"></canvas></div>
     </div>
 
     <div class="stats-section-title">AI Stats Analyzer</div>
@@ -314,13 +314,7 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
       </div>
     </div>
 
-    <a href="https://docs.google.com/spreadsheets/d/109h-Z8jHVl45cLZnp3E7xK5wgKpJtL4KZLUHqrXt2U0/edit" target="_blank" class="sheets-btn">
-      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19.5 3h-15A1.5 1.5 0 003 4.5v15A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-15A1.5 1.5 0 0019.5 3zm-8.25 13.5H7.5v-1.5h3.75v1.5zm0-3H7.5V12h3.75v1.5zm0-3H7.5V9h3.75v1.5zm5.25 6h-3.75v-1.5H16.5v1.5zm0-3h-3.75V12H16.5v1.5zm0-3h-3.75V9H16.5v1.5z"/></svg>
-      Open Full Google Sheet
-    </a>
-    <div class="sheets-note">
-      <strong>Why no live embed?</strong> Google Sheets blocks embedding on external sites unless published as a web page. Open the full sheet via the button above, or in Google Sheets go to <strong>File → Share → Publish to Web</strong> to enable a live embed.
-    </div>
+
   </div>
 </div>
 
@@ -413,38 +407,158 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
 </div>
 
 <script>
-// ─── DATA ───
-const CHAMPIONS=[{year:2008,name:'Kotlar'},{year:2009,name:'Alman'},{year:2010,name:'Tebows Tribe'},{year:2011,name:'BScho'},{year:2012,name:'Phil'},{year:2013,name:'Shark'},{year:2014,name:'Phil'},{year:2015,name:'Serfaty/Noah'},{year:2016,name:'Evan'},{year:2017,name:'Logan'},{year:2018,name:'Alman'},{year:2019,name:'Kotlar'},{year:2020,name:'Koslow'},{year:2021,name:'Phil'}];
-const MEMBERS_DATA={Alman:{avg:6.8,finishes:{2008:8,2009:2,2010:1,2011:5,2012:11,2013:12,2014:10,2015:9,2016:8,2017:6,2018:1,2019:5,2020:11,2021:11}},BSho:{avg:6.8,finishes:{2010:9,2011:1,2012:7,2013:6,2014:10,2015:10,2016:2,2017:7,2018:8,2019:11,2020:2,2021:2}},Evan:{avg:6.0,finishes:{2008:1,2009:2,2010:4,2011:9,2012:8,2013:12,2014:12,2015:6,2016:1,2017:5,2018:7,2019:8,2020:6,2021:7}},Fisboin:{avg:7.5,finishes:{2008:7,2009:8,2010:7,2011:7,2012:2,2013:8,2014:3,2015:4,2016:11,2017:12,2018:9,2019:9,2020:9,2021:9}},Glick:{avg:6.5,finishes:{2008:6,2010:6,2011:2,2012:5,2013:11,2014:7,2015:8,2016:6,2017:4,2018:4,2019:3,2020:12,2021:12}},Koslow:{avg:4.2,finishes:{2012:3,2013:4,2014:11,2015:5,2016:3,2017:3,2018:2,2019:6,2020:1,2021:1}},Kotlar:{avg:5.7,finishes:{2008:1,2009:6,2010:6,2011:5,2012:4,2013:5,2014:5,2015:11,2016:12,2017:2,2018:12,2019:1,2020:8,2021:8}},Logan:{avg:6.4,finishes:{2009:4,2010:2,2011:10,2012:10,2013:7,2014:6,2015:3,2016:10,2017:1,2018:10,2019:12,2020:3,2021:11}},Noah:{avg:6.0,finishes:{2011:6,2015:1,2016:9,2017:9,2018:3,2019:7,2020:7,2021:9}},Phil:{avg:4.8,finishes:{2011:3,2012:1,2013:3,2014:1,2015:7,2016:5,2017:8,2018:11,2019:4,2020:5,2021:1}},Serfaty:{avg:6.9,finishes:{2008:4,2009:7,2010:3,2011:12,2012:6,2013:9,2014:9,2015:1,2016:7,2017:11}},Shark:{avg:6.2,finishes:{2008:10,2011:4,2012:11,2013:1,2014:4,2015:2,2016:4,2017:10,2018:6,2019:10,2020:4,2021:4}},'Fried/Shap':{avg:5.7,finishes:{2018:5,2019:2,2020:10,2021:10}}};
-const MEMBER_NAMES=Object.keys(MEMBERS_DATA);
-const GOLD='#F5A623';
+// ─── LOAD REAL DATA FROM league_data.json ───
+let LEAGUE_DATA = null;
+let activeMembers = [];
+let memberChartInst = null;
+let chartsBuilt = false;
+
+// Bios per member — edit these to update
+const MEMBER_BIOS = {
+  'Phil':   "The most decorated member in league history. Also the guy who dropped Devonta Freeman — a player of the year candidate — for a kicker in 2015. The league has not forgotten.",
+  'Koslow': "The most dominant member in recent history. Back-to-back 1st place finishes in 2020 and 2021. Best average finish in the league.",
+  'Jordan': "One of the highest win percentages in the league. Perennial contender and original era member.",
+  'Evan':   "Original league member. Champion in 2016. Gary owes him $20 and always will.",
+  'Logan':  "2017 champion. One of the longest-tenured members in the league.",
+  'Alman':  "Two-time champion. One of the founding generation of the league.",
+  'Dan':    "Consistent performer across 15+ seasons. Never the flashiest, always competitive.",
+  'Bsho':   "2011 champion. Known for back-to-back runner-up finishes. Still chasing that second title.",
+  'Shark':  "The Commissioner since 2016. Built this website. Also a former champion.",
+  'Noah':   "Joined mid-era and immediately made noise. Strong win percentage across his seasons.",
+  'Freid':  "GIRTH WIND & FIRE. Brought energy and chaos in equal measure.",
+  'Danny':  "One of the most active members. Has never won it but keeps coming back.",
+  'Dylan':  "Joined for a stretch and held his own against the league vets.",
+};
+
+const MEMBER_INITIALS = {
+  Phil:'PH', Koslow:'KO', Jordan:'JO', Evan:'EV', Logan:'LO',
+  Alman:'AL', Dan:'DN', Bsho:'BS', Shark:'SH', Noah:'NO',
+  Freid:'FR', Danny:'DA', Dylan:'DY',
+};
+
+const GOLD = '#F5A623';
+const CHART_COLORS = [
+  '#F5A623','#60D394','#6CB4EE','#FF6B6B','#C77DFF',
+  '#FFD166','#06D6A0','#EF476F','#118AB2','#F77F00',
+  '#7B2D8B','#2EC4B6','#E76F51'
+];
+
+async function loadData() {
+  try {
+    const r = await fetch('league_data.json');
+    if (!r.ok) throw new Error('not found');
+    LEAGUE_DATA = await r.json();
+    onDataLoaded();
+  } catch(e) {
+    console.warn('league_data.json not found, using fallback data');
+    useFallbackData();
+  }
+}
+
+function onDataLoaded() {
+  buildTicker();
+  buildChamps();
+  renderMembers();
+  updateQuickStats();
+  if (document.getElementById('page-stats').classList.contains('active')) {
+    buildCharts();
+  }
+}
+
+function updateQuickStats() {
+  if (!LEAGUE_DATA) return;
+  const stats = LEAGUE_DATA.alltime_stats || {};
+  const members = LEAGUE_DATA.members || [];
+  const seasons = LEAGUE_DATA.seasons || [];
+
+  // Most titles
+  let maxTitles = 0, topChamp = '';
+  let champYears = {};
+  for (const [name, s] of Object.entries(stats)) {
+    if (members.includes(name) && s.championships > maxTitles) {
+      maxTitles = s.championships;
+      topChamp = name;
+    }
+  }
+  // Find years for top champ
+  const champList = (LEAGUE_DATA.champions || []).filter(c => c.name === topChamp).map(c => c.year);
+
+  // Best avg finish
+  let bestAvg = 99, bestAvgName = '';
+  for (const [name, s] of Object.entries(stats)) {
+    if (members.includes(name) && s.avg_finish && s.avg_finish < bestAvg) {
+      bestAvg = s.avg_finish;
+      bestAvgName = name;
+    }
+  }
+
+  const cards = document.querySelectorAll('.stat-card');
+  if (cards[0]) {
+    cards[0].querySelector('.stat-card-value').textContent = seasons.length || '17';
+    cards[0].querySelector('.stat-card-sub').textContent = seasons.length ? `${seasons[0].season} – ${seasons[seasons.length-1].season}` : '2008 – 2024';
+  }
+  if (cards[1]) {
+    cards[1].querySelector('.stat-card-value').textContent = members.length || '13';
+    cards[1].querySelector('.stat-card-sub').textContent = 'Active Members';
+  }
+  if (cards[2]) {
+    cards[2].querySelector('.stat-card-value').textContent = maxTitles || '–';
+    cards[2].querySelector('.stat-card-sub').textContent = `${topChamp} (${champList.slice(0,3).join(', ')})`;
+  }
+  if (cards[3]) {
+    cards[3].querySelector('.stat-card-value').textContent = bestAvg || '–';
+    cards[3].querySelector('.stat-card-sub').textContent = bestAvgName;
+  }
+}
+
+function getMemberStats(name) {
+  if (!LEAGUE_DATA) return null;
+  return (LEAGUE_DATA.alltime_stats || {})[name] || null;
+}
+
+function getFinishGrid() {
+  if (!LEAGUE_DATA) return {};
+  return LEAGUE_DATA.finish_grid || {};
+}
+
+function getMembers() {
+  if (!LEAGUE_DATA) return ['Phil','Koslow','Jordan','Evan','Logan','Alman','Dan','Bsho','Shark','Noah','Freid','Danny','Dylan'];
+  return LEAGUE_DATA.members || [];
+}
+
+function getChampions() {
+  if (!LEAGUE_DATA) return [];
+  return LEAGUE_DATA.champions || [];
+}
 
 // ─── TICKER ───
-function buildTicker(){
-  const items=['🏈 JUST DON\'T LOSE','★ EST. 2008','🏆 BUT BROOO FANTASY FOOTBALL','⚡ 12 TEAMS · 17 SEASONS'];
-  CHAMPIONS.slice(-7).reverse().forEach(c=>items.push(`🥇 ${c.year} CHAMP: ${c.name.toUpperCase()}`));
-  items.push('🔥 BOBBY FRIEDS FATHERLY TROPHY','💀 JUST DON\'T LOSE BRO');
-  const all=[...items,...items];
-  document.getElementById('ticker-inner').innerHTML=all.map(t=>`<span class="ticker-item">${t}</span>`).join('');
+function buildTicker() {
+  const champs = getChampions();
+  const items = ['🏈 JUST DON'T LOSE','★ EST. 2008','🏆 BUT BROOO FANTASY FOOTBALL','⚡ 13 TEAMS · 17 SEASONS'];
+  champs.slice(-7).reverse().forEach(c => items.push(`🥇 ${c.year} CHAMP: ${c.name.toUpperCase()}`));
+  items.push('🔥 BOBBY FRIEDS FATHERLY TROPHY','💀 JUST DON'T LOSE BRO');
+  const all = [...items, ...items];
+  document.getElementById('ticker-inner').innerHTML = all.map(t => `<span class="ticker-item">${t}</span>`).join('');
 }
-buildTicker();
 
 // ─── CHAMPS SCROLL ───
-function buildChamps(){
-  document.getElementById('champs-scroll').innerHTML=CHAMPIONS.slice().reverse().map(c=>`<div class="champ-pill"><span>${c.year}</span> ${c.name}</div>`).join('');
+function buildChamps() {
+  const champs = getChampions();
+  document.getElementById('champs-scroll').innerHTML = champs.slice().reverse().map(c =>
+    `<div class="champ-pill"><span>${c.year}</span> ${c.name}</div>`
+  ).join('');
 }
-buildChamps();
 
 // ─── NAVIGATION ───
-const PAGE_TITLES={home:'ButBrooo',timeline:'The Timeline',stats:'The Stats',league:'The League',social:'Follow Us'};
-function navigate(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('nav-'+page).classList.add('active');
-  document.getElementById('header-title').textContent=PAGE_TITLES[page];
-  document.getElementById('page-'+page).scrollTop=0;
-  if(page==='stats'&&!chartsBuilt)buildCharts();
+const PAGE_TITLES = {home:'ButBrooo',timeline:'The Timeline',stats:'The Stats',league:'The League',social:'Follow Us'};
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+  document.getElementById('header-title').textContent = PAGE_TITLES[page];
+  document.getElementById('page-' + page).scrollTop = 0;
+  if (page === 'stats' && !chartsBuilt && LEAGUE_DATA) buildCharts();
 }
 
 // ─── TIMELINE ───
@@ -500,93 +614,251 @@ document.getElementById('add-modal').addEventListener('click',function(e){if(e.t
 renderTimeline();
 
 // ─── CHARTS ───
-let chartsBuilt=false,memberChartInst=null,activeMember=MEMBER_NAMES[0];
-function buildCharts(){
-  chartsBuilt=true;
-  const sorted=MEMBER_NAMES.slice().sort((a,b)=>MEMBERS_DATA[a].avg-MEMBERS_DATA[b].avg);
-  new Chart(document.getElementById('avgChart').getContext('2d'),{
-    type:'bar',
-    data:{labels:sorted,datasets:[{data:sorted.map(n=>MEMBERS_DATA[n].avg),backgroundColor:sorted.map((_,i)=>i===0?GOLD:'rgba(245,166,35,0.22)'),borderColor:sorted.map((_,i)=>i===0?GOLD:'rgba(245,166,35,0.5)'),borderWidth:1,borderRadius:4}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Avg: ${c.raw} (1=best)`}}},scales:{x:{min:1,max:12,ticks:{color:'rgba(255,255,255,0.45)',font:{size:10}},grid:{color:'rgba(255,255,255,0.05)'}},y:{ticks:{color:'rgba(255,255,255,0.7)',font:{size:10}},grid:{display:false}}}}
+function buildCharts() {
+  chartsBuilt = true;
+  const members = getMembers();
+  const allStats = LEAGUE_DATA ? LEAGUE_DATA.alltime_stats || {} : {};
+  const grid = getFinishGrid();
+
+  // Sort members by avg finish (lower = better)
+  const sorted = members.slice().filter(n => allStats[n] && allStats[n].avg_finish)
+    .sort((a,b) => allStats[a].avg_finish - allStats[b].avg_finish);
+
+  // Avg finish chart — horizontal bar, tall enough for all names
+  const avgCtx = document.getElementById('avgChart').getContext('2d');
+  new Chart(avgCtx, {
+    type: 'bar',
+    data: {
+      labels: sorted,
+      datasets: [{
+        data: sorted.map(n => allStats[n] ? allStats[n].avg_finish : null),
+        backgroundColor: sorted.map((_,i) => i===0 ? GOLD : 'rgba(245,166,35,0.22)'),
+        borderColor:     sorted.map((_,i) => i===0 ? GOLD : 'rgba(245,166,35,0.5)'),
+        borderWidth: 1, borderRadius: 4,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {display:false},
+        tooltip: {callbacks:{label: c => `Avg: ${c.raw} (1=best)`}}
+      },
+      scales: {
+        x: {
+          min: 1, max: 13,
+          ticks: {color:'rgba(255,255,255,0.45)', font:{size:10}},
+          grid: {color:'rgba(255,255,255,0.05)'}
+        },
+        y: {
+          ticks: {color:'rgba(255,255,255,0.75)', font:{size:11}},
+          grid: {display:false}
+        }
+      }
+    }
   });
-  const filterRow=document.getElementById('member-filter');
-  filterRow.innerHTML=MEMBER_NAMES.map(n=>`<button class="filter-btn${n===activeMember?' active':''}" onclick="setMember('${n}')">${n}</button>`).join('');
-  buildMemberChart();
-}
-function buildMemberChart(){
-  const ctx=document.getElementById('memberChart').getContext('2d');
-  if(memberChartInst)memberChartInst.destroy();
-  const data=MEMBERS_DATA[activeMember];
-  const years=Object.keys(data.finishes).map(Number).sort((a,b)=>a-b);
-  memberChartInst=new Chart(ctx,{
-    type:'line',
-    data:{labels:years,datasets:[{label:activeMember,data:years.map(y=>data.finishes[y]),borderColor:GOLD,backgroundColor:'rgba(245,166,35,0.08)',pointBackgroundColor:GOLD,pointRadius:5,tension:0.3,fill:true}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{reverse:true,min:1,max:12,ticks:{color:'rgba(255,255,255,0.45)',font:{size:10},stepSize:2},grid:{color:'rgba(255,255,255,0.05)'},title:{display:true,text:'Finish (1=best)',color:'rgba(255,255,255,0.35)',font:{size:9}}},x:{ticks:{color:'rgba(255,255,255,0.45)',font:{size:10}},grid:{display:false}}}}
-  });
-}
-function setMember(name){
-  activeMember=name;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b.textContent===name));
+
+  // Multi-select member filter
+  activeMembers = members.length > 0 ? [members[0]] : [];
+  const filterRow = document.getElementById('member-filter');
+  filterRow.innerHTML = members.map(n =>
+    `<button class="filter-btn${activeMembers.includes(n) ? ' active' : ''}" onclick="toggleMember('${n}')">${n}</button>`
+  ).join('');
   buildMemberChart();
 }
 
-// ─── LEAGUE MEMBERS ───
-const MEMBERS=[
-  {name:'Jason Sharkey',initials:'JS',team:'Commissioner · Est. 2016',badge:'comm',badgeText:'Commissioner',bio:'The Commissioner of the league since 2016. Keeper of the rules, builder of the website, and architect of the annual chaos.'},
-  {name:'Phil',initials:'PH',team:'3x Champion · Drop Artist',badge:'champ',badgeText:'3x Champ',bio:"3-time champion (2012, 2014, 2021) — the most in league history. Also the guy who dropped Devonta Freeman for a kicker in 2015. The league has not forgotten."},
-  {name:'Koslow',initials:'KO',team:'Best Avg Finish: 4.2',badge:'champ',badgeText:'2020 Champ',bio:'2020 champion with the best average finish in league history at 4.2. The most dominant member in recent seasons.'},
-  {name:'Kotlar',initials:'KT',team:'2x Champion',badge:'champ',badgeText:'2x Champ',bio:'2-time champion (2008, 2019). One of the original era legends of the league.'},
-  {name:'Evan',initials:'EV',team:'2016 Champion · OG Member',badge:'champ',badgeText:'2016 Champ',bio:'Original league member and 2016 champion. Gary owes him $20. Still waiting.'},
-  {name:'Logan',initials:'LO',team:'2017 Champion',badge:'champ',badgeText:'2017 Champ',bio:'2017 champion. Consistent performer and one of the longer-tenured members.'},
-  {name:'Alman',initials:'AL',team:'2x Champion',badge:'champ',badgeText:'2x Champ',bio:'2-time champion (2009, 2018). One of the most tenured members in league history.'},
-  {name:'BSho',initials:'BS',team:'2011 Champion',badge:'champ',badgeText:'2011 Champ',bio:'2011 champion. Back-to-back 2nd place finishes in 2020 and 2021 — still hunting that second title.'},
-  {name:'Shark',initials:'SH',team:'2013 Champion',badge:'champ',badgeText:'2013 Champ',bio:'2013 champion. Consistent top-half finisher across 12+ seasons.'},
-  {name:'Serfaty/Noah',initials:'SN',team:'2015 Champions',badge:'champ',badgeText:'2015 Champ',bio:'2015 co-champions. Noah has also posted strong individual finishes across multiple seasons.'},
-  {name:'Fisboin',initials:'FI',team:'Avg Finish: 7.5',badge:null,bio:'One of the longest-tenured members. League-worst avg finish of 7.5. Shows up every year though. Respect.'},
-  {name:'Glick',initials:'GL',team:'OG Member',badge:null,bio:'Original era member. Finished 12th in both 2020 and 2021, but has a 3rd place finish in 2019 to prove the talent is there.'},
-];
-function renderMembers(){
-  document.getElementById('members-list').innerHTML=MEMBERS.map((m,i)=>`
-    <div class="member-card" onclick="showMember(${i})">
-      <div class="member-avatar">${m.initials}</div>
-      <div class="member-info"><div class="member-name">${m.name}</div><div class="member-team">${m.team}</div></div>
-      ${m.badge?`<div class="member-badge badge-${m.badge}">${m.badgeText}</div>`:''}
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-    </div>`).join('');
+function toggleMember(name) {
+  if (activeMembers.includes(name)) {
+    if (activeMembers.length === 1) return; // keep at least one
+    activeMembers = activeMembers.filter(m => m !== name);
+  } else {
+    activeMembers.push(name);
+  }
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', activeMembers.includes(b.textContent));
+  });
+  buildMemberChart();
 }
-function showMember(i){
-  const m=MEMBERS[i];
-  const data=MEMBERS_DATA[m.name]||MEMBERS_DATA[m.initials];
-  const titles=CHAMPIONS.filter(c=>c.name.toLowerCase().includes(m.name.split(' ')[0].toLowerCase())||m.name.toLowerCase().includes(c.name.toLowerCase())).length;
-  const finishes=data?Object.values(data.finishes):[];
-  const best=finishes.length?Math.min(...finishes):'–';
-  const avg=data?data.avg:'–';
-  document.getElementById('member-modal-content').innerHTML=`
+
+function buildMemberChart() {
+  const ctx = document.getElementById('memberChart').getContext('2d');
+  if (memberChartInst) memberChartInst.destroy();
+  const grid = getFinishGrid();
+
+  // Collect all years across selected members
+  const allYears = new Set();
+  activeMembers.forEach(name => {
+    const finishes = grid[name] || {};
+    Object.keys(finishes).forEach(y => allYears.add(y));
+  });
+  const years = [...allYears].sort();
+
+  const datasets = activeMembers.map((name, i) => {
+    const finishes = grid[name] || {};
+    return {
+      label: name,
+      data: years.map(y => finishes[y] || null),
+      borderColor: CHART_COLORS[i % CHART_COLORS.length],
+      backgroundColor: CHART_COLORS[i % CHART_COLORS.length] + '15',
+      pointBackgroundColor: CHART_COLORS[i % CHART_COLORS.length],
+      pointRadius: 5, tension: 0.3, fill: false,
+      spanGaps: true,
+    };
+  });
+
+  memberChartInst = new Chart(ctx, {
+    type: 'line',
+    data: {labels: years, datasets},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: activeMembers.length > 1,
+          labels: {color:'rgba(255,255,255,0.7)', font:{size:10}, boxWidth:12}
+        }
+      },
+      scales: {
+        y: {
+          reverse: true, min: 1, max: 13,
+          ticks: {color:'rgba(255,255,255,0.45)', font:{size:10}, stepSize:2},
+          grid: {color:'rgba(255,255,255,0.05)'},
+          title: {display:true, text:'Finish (1=best)', color:'rgba(255,255,255,0.35)', font:{size:9}}
+        },
+        x: {
+          ticks: {color:'rgba(255,255,255,0.45)', font:{size:10}},
+          grid: {display:false}
+        }
+      }
+    }
+  });
+}
+
+// ─── LEAGUE MEMBERS ───
+function trophies(n) {
+  return '🏆'.repeat(Math.min(n, 5));
+}
+
+function renderMembers() {
+  const members = getMembers();
+  const allStats = LEAGUE_DATA ? LEAGUE_DATA.alltime_stats || {} : {};
+  const champs = getChampions();
+
+  const list = document.getElementById('members-list');
+  list.innerHTML = members.map((name, i) => {
+    const s = allStats[name] || {};
+    const titles = s.championships || 0;
+    const initials = MEMBER_INITIALS[name] || name.slice(0,2).toUpperCase();
+    const avgFinish = s.avg_finish || '–';
+    const wins = s.wins || 0;
+    const losses = s.losses || 0;
+    const winPct = s.win_pct ? (s.win_pct * 100).toFixed(0) + '%' : '–';
+    const champYears = champs.filter(c => c.name === name).map(c => c.year);
+    const subtitle = titles > 0
+      ? `${titles}x Champ (${champYears.join(', ')}) · Avg Finish: ${avgFinish}`
+      : `Avg Finish: ${avgFinish} · Win%: ${winPct}`;
+    const badge = titles > 0
+      ? `<div class="member-badge badge-champ">${trophies(titles)} ${titles}x</div>`
+      : (name === 'Shark' ? '<div class="member-badge badge-comm">Commish</div>' : '');
+
+    return `<div class="member-card" onclick="showMember('${name}')">
+      <div class="member-avatar">${initials}</div>
+      <div class="member-info">
+        <div class="member-name">${name}</div>
+        <div class="member-team">${subtitle}</div>
+      </div>
+      ${badge}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`;
+  }).join('');
+}
+
+function showMember(name) {
+  const allStats = LEAGUE_DATA ? LEAGUE_DATA.alltime_stats || {} : {};
+  const champs = getChampions();
+  const grid = getFinishGrid();
+  const s = allStats[name] || {};
+  const initials = MEMBER_INITIALS[name] || name.slice(0,2).toUpperCase();
+  const titles = s.championships || 0;
+  const champYears = champs.filter(c => c.name === name).map(c => c.year);
+  const avg = s.avg_finish || '–';
+  const best = s.best_finish || '–';
+  const worst = s.worst_finish || '–';
+  const wins = s.wins || 0;
+  const losses = s.losses || 0;
+  const ties = s.ties || 0;
+  const winPct = s.win_pct ? (s.win_pct * 100).toFixed(1) + '%' : '–';
+  const seasons = s.seasons || 0;
+  const pf = s.avg_fpts_per_season ? s.avg_fpts_per_season.toFixed(1) : '–';
+  const bio = MEMBER_BIOS[name] || `${name} has been a member of the ButBrooo league.`;
+  const trophyStr = titles > 0 ? `<div style="font-size:24px;text-align:center;margin-bottom:8px;">${'🏆'.repeat(titles)}</div>` : '';
+  const champYearsStr = champYears.length > 0
+    ? `<div style="text-align:center;font-size:12px;color:var(--gold);margin-bottom:12px;">Champion: ${champYears.join(', ')}</div>` : '';
+
+  // Season finishes table
+  const finishes = grid[name] || {};
+  const finishRows = Object.entries(finishes).sort((a,b)=>a[0]-b[0]).map(([yr, place]) => {
+    const isChamp = place === 1;
+    return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);">
+      <span style="color:var(--text-muted);font-size:12px;">${yr}</span>
+      <span style="font-weight:600;font-size:12px;color:${isChamp?'var(--gold)':'var(--text-dim)'};">${isChamp?'🏆 1st':place===2?'🥈 2nd':place===3?'🥉 3rd':place+'th'}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('member-modal-content').innerHTML = `
     <div class="modal-handle" style="margin-bottom:14px;"></div>
-    <div class="detail-avatar">${m.initials}</div>
-    <div class="detail-name">${m.name}</div>
-    <div class="detail-team">${m.team}</div>
-    <div class="detail-stats-grid">
-      <div class="detail-stat"><div class="detail-stat-val">${titles||'0'}</div><div class="detail-stat-lbl">Titles</div></div>
+    <div class="detail-avatar">${initials}</div>
+    <div class="detail-name">${name}</div>
+    ${trophyStr}
+    ${champYearsStr}
+    <div class="detail-stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:10px;">
+      <div class="detail-stat"><div class="detail-stat-val">${titles}</div><div class="detail-stat-lbl">Titles</div></div>
       <div class="detail-stat"><div class="detail-stat-val">${avg}</div><div class="detail-stat-lbl">Avg Rank</div></div>
-      <div class="detail-stat"><div class="detail-stat-val">${best}</div><div class="detail-stat-lbl">Best Finish</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${best}</div><div class="detail-stat-lbl">Best</div></div>
     </div>
-    <div class="detail-bio">${m.bio}</div>
+    <div class="detail-stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px;">
+      <div class="detail-stat"><div class="detail-stat-val">${seasons}</div><div class="detail-stat-lbl">Seasons</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${winPct}</div><div class="detail-stat-lbl">Win %</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${wins}-${losses}</div><div class="detail-stat-lbl">W-L</div></div>
+    </div>
+    <div class="detail-bio" style="margin-bottom:14px;">${bio}</div>
+    ${finishRows ? `<div style="font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--gold);letter-spacing:0.05em;margin-bottom:8px;">Season History</div><div style="background:var(--dark3);border-radius:8px;padding:12px;margin-bottom:14px;">${finishRows}</div>` : ''}
     <button class="close-detail" onclick="closeMemberModal()">Close</button>`;
   document.getElementById('member-modal').classList.add('open');
 }
 function closeMemberModal(){document.getElementById('member-modal').classList.remove('open');}
 document.getElementById('member-modal').addEventListener('click',function(e){if(e.target===this)closeMemberModal();});
-renderMembers();
 
 // ─── AI ANALYZER ───
-const CONTEXT=`You are the trash-talk-friendly stats analyst for the ButBrooo Fantasy Football League (est. 2008). Answer questions about league history in a fun, sharp tone. Keep it under 120 words. Use this data:
+function buildAIContext() {
+  if (!LEAGUE_DATA) return 'ButBrooo Fantasy Football League est. 2008. JUST DON'T LOSE.';
+  const stats = LEAGUE_DATA.alltime_stats || {};
+  const members = LEAGUE_DATA.members || [];
+  const champs = LEAGUE_DATA.champions || [];
+  const h2h = LEAGUE_DATA.alltime_h2h || {};
 
-CHAMPIONS: 2008:Kotlar, 2009:Alman, 2010:Tebows Tribe, 2011:BScho, 2012:Phil, 2013:Shark, 2014:Phil, 2015:Serfaty/Noah, 2016:Evan, 2017:Logan, 2018:Alman, 2019:Kotlar, 2020:Koslow, 2021:Phil
+  const champStr = champs.map(c => `${c.year}:${c.name}`).join(', ');
+  const statsStr = members.map(n => {
+    const s = stats[n];
+    if (!s) return '';
+    return `${n}(${s.seasons}seasons,${s.championships}titles,avg${s.avg_finish},win%${s.win_pct},${s.wins}W-${s.losses}L)`;
+  }).filter(Boolean).join('; ');
 
-AVG FINISH (lower=better): Koslow:4.2, Phil:4.8, Fried/Shap:5.7, Kotlar:5.7, Evan:6.0, Noah:6.0, Shark:6.2, Logan:6.4, Glick:6.5, BSho:6.8, Alman:6.8, Serfaty:6.9, Fisboin:7.5
+  const h2hStr = Object.entries(h2h).slice(0,8).map(([a, opps]) =>
+    Object.entries(opps).slice(0,3).map(([b, rec]) =>
+      `${a}vs${b}:${rec.wins}W-${rec.losses}L`).join(',')
+  ).join('; ');
 
-NOTABLE FACTS: Phil has 3 titles (most ever). Fisboin has worst avg (7.5). Glick finished 12th two years in a row (2020, 2021). Jake Miller drafted a kicker in round 3 in 2009. Phil dropped Devonta Freeman for a kicker in 2015. Fringe Guy Gary was dismissed in 2009 and still owes Evan $20. Koslow won back-to-back (2020, 2021 data: Koslow won 2020, Phil won 2021). League motto: JUST DON'T LOSE.`;
+  return `You are the trash-talk-friendly official stats analyst for the ButBrooo Fantasy Football League (est. 2008). Answer questions in a fun, sharp, slightly irreverent tone. Keep responses under 150 words. Use this REAL league data:
+
+CHAMPIONS (year:winner): ${champStr}
+
+MEMBER STATS (name, seasons, titles, avg_finish lower=better, win%, W-L):
+${statsStr}
+
+HEAD-TO-HEAD SAMPLES: ${h2hStr}
+
+NOTABLE FACTS: Phil dropped Devonta Freeman for a kicker in 2015. Fringe Guy Gary was dismissed in 2009 and owes Evan $20. Jake Miller drafted a kicker in round 3 (2009). League motto: JUST DON'T LOSE. Commissioner since 2016: Shark (Jason Sharkey).`;
+}
 
 async function askAI(q){document.getElementById('ai-input').value=q;sendAI();}
 async function sendAI(){
@@ -595,19 +867,38 @@ async function sendAI(){
   const resp=document.getElementById('ai-response');
   const textEl=document.getElementById('ai-response-text');
   resp.classList.add('visible');
-  textEl.innerHTML='<div class="ai-loading">Analyzing 17 seasons of data <div class="ai-dots"><span></span><span></span><span></span></div></div>';
+  textEl.innerHTML='<div class="ai-loading">Analyzing real league data <div class="ai-dots"><span></span><span></span><span></span></div></div>';
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:CONTEXT,messages:[{role:'user',content:q}]})});
+    const context = buildAIContext();
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:context,
+        messages:[{role:'user',content:q}]
+      })
+    });
     const data=await res.json();
     const text=data.content?.map(b=>b.text||'').join('')||'Could not get a response.';
-    textEl.innerHTML=text.replace(/\n/g,'<br>');
+    textEl.innerHTML=text.replace(/
+/g,'<br>');
   }catch(e){
-    textEl.innerHTML='<em style="color:rgba(255,255,255,0.35)">Unable to reach AI — check your connection.</em>';
+    textEl.innerHTML='<em style="color:rgba(255,255,255,0.35)">Unable to reach AI — check your connection and that the page is served over HTTPS.</em>';
   }
+}
+
+// ─── FALLBACK (if no league_data.json yet) ───
+function useFallbackData() {
+  buildTicker();
+  buildChamps();
+  renderMembers();
 }
 
 // ─── SERVICE WORKER ───
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
+// ─── BOOT ───
+loadData();
 </script>
-</body>
-</html>
