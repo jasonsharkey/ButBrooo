@@ -187,6 +187,29 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
 .social-card-desc{font-size:12px;color:var(--text-dim);}
 .social-section-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin:16px 0 10px;}
 ::-webkit-scrollbar{width:0;}
+
+/* H2H */
+.h2h-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.h2h-btn{background:var(--dark3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.15s;}
+.h2h-btn.active{background:rgba(245,166,35,0.15);border-color:var(--gold);color:var(--gold);}
+.h2h-grid{display:flex;flex-direction:column;gap:8px;}
+.h2h-row{background:var(--dark3);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.h2h-opp{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--text);flex:1;}
+.h2h-record{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.05em;}
+.h2h-record.win{color:var(--gold);}
+.h2h-record.loss{color:#ff6060;}
+.h2h-record.even{color:var(--text-muted);}
+.h2h-bar-wrap{width:80px;height:6px;background:var(--surface);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.h2h-bar-fill{height:100%;border-radius:3px;background:var(--gold);}
+.h2h-pts{font-size:10px;color:var(--text-muted);text-align:right;white-space:nowrap;}
+/* Member AI summary */
+.member-ai-section{background:var(--dark2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;}
+.member-ai-selector{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.member-ai-btn{background:var(--dark3);border:1px solid var(--border);border-radius:16px;padding:5px 10px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.15s;}
+.member-ai-btn.active{background:rgba(245,166,35,0.15);border-color:var(--gold);color:var(--gold);}
+.member-ai-response{font-size:13px;line-height:1.7;color:var(--text-dim);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:none;}
+.member-ai-response.visible{display:block;}
+
 </style>
 </head>
 <body>
@@ -314,6 +337,23 @@ body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);m
         <div class="ai-response-text" id="ai-response-text"></div>
       </div>
     </div>
+
+    <div class="stats-section-title">Head to Head Records</div>
+    <div class="chart-card" style="padding:16px;">
+      <div class="h2h-selector" id="h2h-selector"></div>
+      <div class="h2h-grid" id="h2h-grid"><div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0;">Select a member above to see their H2H record</div></div>
+    </div>
+
+    <div class="stats-section-title">Member Trend Analysis</div>
+    <div class="member-ai-section">
+      <div class="ai-section-header" style="margin-bottom:10px;">
+        <div class="ai-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0-2 2v16"/></svg></div>
+        <div><h3>Player Breakdown</h3><p>AI analysis of each member's career trajectory</p></div>
+      </div>
+      <div class="member-ai-selector" id="member-ai-selector"></div>
+      <div class="member-ai-response" id="member-ai-response"><div id="member-ai-text"></div></div>
+    </div>
+
 
   </div>
 </div>
@@ -466,6 +506,7 @@ function onDataLoaded() {
   buildChamps();
   updateQuickStats();
   renderMembers();
+  renderTimeline(); // re-render to include any #Timeline events from league_data.json
   if (document.getElementById('page-stats').classList.contains('active')) {
     buildCharts();
   }
@@ -537,9 +578,9 @@ function buildTicker() {
   var champs = getChampions();
   var items  = [
     '🏈 JUST DON\'T LOSE',
-    '★ EST. 2008',
+    '  EST. 2008',
     '🏆 BUT BROOO FANTASY FOOTBALL',
-    '⚡ 13 TEAMS - 17 SEASONS'
+    '  13 TEAMS - 17 SEASONS'
   ];
   champs.slice(-7).reverse().forEach(function(c) {
     items.push('🥇 ' + c.year + ' CHAMP: ' + c.name.toUpperCase());
@@ -593,11 +634,41 @@ var DEFAULT_TIMELINE = [
 ];
 
 function loadTimeline() {
-  try { var s=localStorage.getItem('bb_timeline'); return s?JSON.parse(s):DEFAULT_TIMELINE; }
-  catch(e) { return DEFAULT_TIMELINE; }
+  // Merge: league_data.json timeline (from #Timeline bot) + localStorage (manual adds)
+  var base = DEFAULT_TIMELINE.slice();
+
+  // Add events from league_data.json if available
+  if (LEAGUE_DATA && LEAGUE_DATA.timeline && LEAGUE_DATA.timeline.length) {
+    LEAGUE_DATA.timeline.forEach(function(e) {
+      // Avoid duplicates by checking year+text
+      var exists = base.some(function(b){ return b.year===e.year && b.text===e.text; });
+      if (!exists) base.push(e);
+    });
+  }
+
+  // Merge localStorage additions
+  try {
+    var stored = localStorage.getItem('bb_timeline_additions');
+    if (stored) {
+      JSON.parse(stored).forEach(function(e) {
+        var exists = base.some(function(b){ return b.year===e.year && b.text===e.text; });
+        if (!exists) base.push(e);
+      });
+    }
+  } catch(err) {}
+
+  base.sort(function(a,b){ return a.year - b.year; });
+  return base;
 }
 function saveTimeline(d) {
-  try { localStorage.setItem('bb_timeline',JSON.stringify(d)); } catch(e) {}
+  // Only save user-added events to localStorage (not the defaults)
+  try {
+    var defaults = DEFAULT_TIMELINE;
+    var additions = d.filter(function(e) {
+      return !defaults.some(function(def){ return def.year===e.year && def.text===e.text; });
+    });
+    localStorage.setItem('bb_timeline_additions', JSON.stringify(additions));
+  } catch(e) {}
 }
 function escapeHtml(t) {
   return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -935,6 +1006,181 @@ if ('serviceWorker' in navigator) {
 }
 
 //    Boot                                                   
+//    H2H Section                                            
+var activeH2HMember = null;
+
+function renderH2HSelector() {
+  var members = getMembers();
+  var sel = document.getElementById('h2h-selector');
+  if (!sel) return;
+  sel.innerHTML = members.map(function(n) {
+    return '<button class="h2h-btn" onclick="selectH2H(\'' + n + '\')">' + n + '</button>';
+  }).join('');
+}
+
+function selectH2H(name) {
+  activeH2HMember = name;
+  document.querySelectorAll('.h2h-btn').forEach(function(b) {
+    b.classList.toggle('active', b.textContent === name);
+  });
+  renderH2HGrid(name);
+}
+
+function renderH2HGrid(name) {
+  var grid    = document.getElementById('h2h-grid');
+  var h2h     = LEAGUE_DATA ? (LEAGUE_DATA.alltime_h2h || {}) : {};
+  var records = h2h[name] || {};
+  var members = getMembers().filter(function(m) { return m !== name; });
+
+  if (!Object.keys(records).length) {
+    grid.innerHTML = '<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px 0;">No H2H data available for ' + name + '</div>';
+    return;
+  }
+
+  // Sort by games played desc
+  var sorted = members.slice().sort(function(a, b) {
+    var ra = records[a] || {wins:0,losses:0};
+    var rb = records[b] || {wins:0,losses:0};
+    return (rb.wins+rb.losses) - (ra.wins+ra.losses);
+  });
+
+  grid.innerHTML = sorted.map(function(opp) {
+    var rec = records[opp];
+    if (!rec || (rec.wins + rec.losses) === 0) return '';
+    var w   = rec.wins   || 0;
+    var l   = rec.losses || 0;
+    var tot = w + l;
+    var pct = tot > 0 ? Math.round((w / tot) * 100) : 0;
+    var pf  = rec.pts_for     ? rec.pts_for.toFixed(1)     : '-';
+    var pa  = rec.pts_against ? rec.pts_against.toFixed(1) : '-';
+    var cls = w > l ? 'win' : (l > w ? 'loss' : 'even');
+    var barW = tot > 0 ? Math.round((w/tot)*100) : 0;
+    return '<div class="h2h-row">'
+      + '<div class="h2h-opp">' + opp + '</div>'
+      + '<div class="h2h-record ' + cls + '">' + w + '-' + l + '</div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">'
+      + '<div class="h2h-bar-wrap"><div class="h2h-bar-fill" style="width:' + barW + '%"></div></div>'
+      + '<div class="h2h-pts">' + pct + '% &nbsp;|&nbsp; PF ' + pf + '</div>'
+      + '</div>'
+      + '</div>';
+  }).filter(Boolean).join('');
+}
+
+//    Member AI Summary                                      
+var activeAIMember = null;
+var memberAICache  = {};
+
+function renderMemberAISelector() {
+  var members = getMembers();
+  var sel = document.getElementById('member-ai-selector');
+  if (!sel) return;
+  sel.innerHTML = members.map(function(n) {
+    return '<button class="member-ai-btn" onclick="selectMemberAI(\'' + n + '\')">' + n + '</button>';
+  }).join('');
+}
+
+function selectMemberAI(name) {
+  activeAIMember = name;
+  document.querySelectorAll('.member-ai-btn').forEach(function(b) {
+    b.classList.toggle('active', b.textContent === name);
+  });
+
+  var resp = document.getElementById('member-ai-response');
+  var text = document.getElementById('member-ai-text');
+  resp.classList.add('visible');
+
+  // Use cache if available
+  if (memberAICache[name]) {
+    text.innerHTML = memberAICache[name];
+    return;
+  }
+
+  text.innerHTML = '<div class="ai-loading">Analyzing ' + name + '\'s career... <div class="ai-dots"><span></span><span></span><span></span></div></div>';
+  fetchMemberAI(name);
+}
+
+function buildMemberPrompt(name) {
+  var stats   = getAllStats();
+  var champs  = getChampions();
+  var grid    = getFinishGrid();
+  var h2h     = LEAGUE_DATA ? (LEAGUE_DATA.alltime_h2h || {}) : {};
+  var s       = stats[name] || {};
+  var finishes = grid[name] || {};
+  var champYears = champs.filter(function(c){return c.name===name;}).map(function(c){return c.year;});
+  var h2hRecs  = h2h[name] || {};
+
+  // Best and worst H2H matchup
+  var bestOpp = '', bestW = 0, worstOpp = '', worstPct = 1;
+  Object.keys(h2hRecs).forEach(function(opp) {
+    var r = h2hRecs[opp];
+    var tot = (r.wins||0) + (r.losses||0);
+    if (tot < 3) return;
+    var pct = (r.wins||0) / tot;
+    if (r.wins > bestW) { bestW = r.wins; bestOpp = opp + ' (' + r.wins + '-' + r.losses + ')'; }
+    if (pct < worstPct) { worstPct = pct; worstOpp = opp + ' (' + r.wins + '-' + r.losses + ')'; }
+  });
+
+  // Trend: last 3 seasons vs first 3 seasons
+  var years = Object.keys(finishes).sort();
+  var early = years.slice(0,3).map(function(y){return y+':'+finishes[y];}).join(', ');
+  var recent = years.slice(-3).map(function(y){return y+':'+finishes[y];}).join(', ');
+
+  return 'You are the ButBrooo Fantasy Football League analyst. Write a sharp, fun, slightly trash-talky player profile for ' + name + ' in under 160 words. '
+    + 'Cover: career arc, peak years, decline or rise, biggest rivals, notable trends. Be specific with the numbers. '
+    + 'End with one bold prediction about their 2025 season.\n\n'
+    + 'DATA FOR ' + name.toUpperCase() + ':\n'
+    + 'Seasons: ' + (s.seasons||0) + ' | Championships: ' + (s.championships||0)
+    + (champYears.length ? ' (' + champYears.join(', ') + ')' : '') + '\n'
+    + 'Avg Finish: ' + (s.avg_finish||'-') + ' | Best: ' + (s.best_finish||'-') + ' | Worst: ' + (s.worst_finish||'-') + '\n'
+    + 'Record: ' + (s.wins||0) + 'W-' + (s.losses||0) + 'L | Win%: ' + (s.win_pct ? (s.win_pct*100).toFixed(1)+'%' : '-') + '\n'
+    + 'Early finishes: ' + (early||'N/A') + '\n'
+    + 'Recent finishes: ' + (recent||'N/A') + '\n'
+    + 'Best H2H record vs: ' + (bestOpp||'N/A') + '\n'
+    + 'Worst H2H record vs: ' + (worstOpp||'N/A') + '\n'
+    + 'League motto: JUST DON\'T LOSE.';
+}
+
+function fetchMemberAI(name) {
+  var text = document.getElementById('member-ai-text');
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 500,
+      system: buildMemberPrompt(name),
+      messages: [{role:'user', content:'Give me the player profile for ' + name + '.'}]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var result = (data.content || []).map(function(b){ return b.text||''; }).join('') || 'No analysis available.';
+    result = result.replace(/\n/g, '<br>');
+    memberAICache[name] = result;
+    text.innerHTML = result;
+  })
+  .catch(function(){
+    text.innerHTML = '<em style="color:rgba(255,255,255,0.35)">Unable to reach AI. Check your connection.</em>';
+  });
+}
+
+// Extend onDataLoaded to init H2H and member AI selectors
+var _origOnDataLoaded = onDataLoaded;
+onDataLoaded = function() {
+  _origOnDataLoaded();
+  renderH2HSelector();
+  renderMemberAISelector();
+};
+
+// Also init if stats page already active
+if (document.getElementById('page-stats') && document.getElementById('page-stats').classList.contains('active')) {
+  if (LEAGUE_DATA) {
+    renderH2HSelector();
+    renderMemberAISelector();
+  }
+}
+
+
 loadData();
 
 </script>
