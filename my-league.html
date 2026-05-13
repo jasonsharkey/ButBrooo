@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="IMG_4608.jpg">
+<title>My League — ButBrooo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#F5A623;--black:#0A0A0A;--dark:#111111;--dark2:#1A1A1A;--dark3:#222222;--surface:#2A2A2A;
+  --border:rgba(245,166,35,0.2);--text:#FFFFFF;--text-muted:rgba(255,255,255,0.5);--text-dim:rgba(255,255,255,0.75);
+  --green:#4CAF50;--red:#F44336;--blue:#2196F3;
+  --nav-h:60px;--header-h:54px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);--safe-top:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;background:var(--black);}
+body{font-family:'Barlow',sans-serif;background:var(--black);color:var(--text);min-height:100dvh;overscroll-behavior:none;}
+::-webkit-scrollbar{width:0;}
+
+/* ── LOCK SCREEN ── */
+#lock-screen{
+  position:fixed;inset:0;background:var(--black);z-index:999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;
+}
+.lock-logo{width:90px;height:90px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin-bottom:20px;filter:drop-shadow(0 0 20px rgba(245,166,35,0.3));}
+.lock-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.05em;color:var(--gold);margin-bottom:6px;}
+.lock-sub{font-size:13px;color:var(--text-muted);margin-bottom:32px;letter-spacing:0.05em;}
+.lock-input{
+  width:100%;max-width:280px;background:var(--dark2);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:'Barlow',sans-serif;font-size:16px;
+  padding:14px 16px;outline:none;text-align:center;letter-spacing:0.15em;margin-bottom:10px;
+}
+.lock-input:focus{border-color:var(--gold);}
+.lock-input::placeholder{letter-spacing:0.05em;color:var(--text-muted);}
+.lock-btn{
+  width:100%;max-width:280px;background:var(--gold);border:none;border-radius:10px;
+  color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.1em;
+  padding:14px;cursor:pointer;margin-bottom:10px;
+}
+.lock-error{font-size:12px;color:var(--red);margin-top:2px;display:none;}
+.lock-back{font-size:12px;color:var(--text-muted);text-decoration:none;margin-top:16px;display:block;}
+
+/* ── APP SHELL ── */
+#app{display:none;flex-direction:column;min-height:100dvh;}
+#app.unlocked{display:flex;}
+
+/* ── HEADER ── */
+#ml-header{
+  position:fixed;top:var(--safe-top);left:0;right:0;height:var(--header-h);
+  background:rgba(10,10,10,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;z-index:100;
+}
+.ml-header-left{display:flex;align-items:center;gap:10px;}
+.ml-back-btn{
+  background:none;border:none;color:var(--gold);cursor:pointer;
+  font-size:20px;display:flex;align-items:center;padding:4px;
+}
+.ml-header-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.05em;color:var(--gold);}
+.ml-week-badge{
+  background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.3);border-radius:6px;
+  padding:3px 8px;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;color:var(--gold);
+}
+.ml-header-logo{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--border);cursor:pointer;}
+
+/* ── BOTTOM NAV ── */
+#ml-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--nav-h) + var(--safe-bottom));padding-bottom:var(--safe-bottom);
+  background:rgba(10,10,10,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);display:flex;align-items:stretch;z-index:100;
+}
+.ml-nav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  background:none;border:none;color:var(--text-muted);font-family:'Barlow Condensed',sans-serif;
+  font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;
+  transition:color 0.15s;padding:8px 4px;
+}
+.ml-nav-btn.active{color:var(--gold);}
+.ml-nav-btn svg{width:20px;height:20px;}
+
+/* ── PAGES ── */
+.ml-page{
+  display:none;flex:1;overflow-y:auto;
+  padding-top:calc(var(--safe-top) + var(--header-h) + 16px);
+  padding-bottom:calc(var(--nav-h) + var(--safe-bottom) + 16px);
+}
+.ml-page.active{display:block;}
+.page-pad{padding:0 16px;}
+
+/* ── SECTION TITLE ── */
+.section-title{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.05em;
+  color:var(--gold);margin-bottom:10px;
+}
+
+/* ── HOME PAGE ── */
+.home-hero{
+  background:linear-gradient(135deg,var(--dark2),var(--dark3));
+  border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;
+  display:flex;align-items:center;gap:14px;
+}
+.home-hero-icon{
+  width:52px;height:52px;border-radius:12px;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.home-hero-icon svg{width:26px;height:26px;color:var(--black);}
+.home-hero h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.05em;color:var(--text);}
+.home-hero p{font-size:12px;color:var(--text-muted);margin-top:2px;}
+.quick-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.qs-card{background:var(--dark2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.qs-label{font-size:10px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;}
+.qs-value{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--gold);line-height:1;}
+.qs-sub{font-size:11px;color:var(--text-dim);margin-top:2px;}
+
+/* ── MATCHUP CARDS ── */
+.matchup-card{
+  background:var(--dark2);border:1px solid var(--border);border-radius:12px;
+  padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:border-color 0.15s;
+}
+.matchup-card:active{border-color:var(--gold);}
+.matchup-teams{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.matchup-team{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0;}
+.matchup-team-name{
+  font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;
+  color:var(--text);text-align:center;line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  width:100%;
+}
+.matchup-score{
+  font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);margin-top:4px;line-height:1;
+}
+.matchup-score.winner{color:var(--gold);}
+.matchup-score.loser{color:var(--text-muted);}
+.matchup-vs{
+  font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--text-muted);
+  flex-shrink:0;padding:0 4px;
+}
+.matchup-status{
+  text-align:center;margin-top:8px;font-size:11px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:0.08em;
+  color:var(--text-muted);text-transform:uppercase;
+}
+.matchup-status.live{color:var(--green);}
+
+/* ── STANDINGS ── */
+.standings-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+.standings-table th{
+  font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);
+  padding:8px 6px;text-align:center;border-bottom:1px solid var(--border);
+}
+.standings-table th:first-child{text-align:left;padding-left:10px;}
+.standings-table td{
+  padding:10px 6px;font-size:13px;color:var(--text-dim);
+  border-bottom:1px solid rgba(255,255,255,0.04);text-align:center;vertical-align:middle;
+}
+.standings-table td:first-child{text-align:left;padding-left:10px;}
+.standings-table tr:active td{background:rgba(245,166,35,0.04);cursor:pointer;}
+.standings-rank{
+  font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text-muted);margin-right:4px;
+}
+.standings-rank.top{color:var(--gold);}
+.standings-team-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+.standings-record{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text);}
+.standings-pts{font-size:12px;}
+.playoff-divider{
+  text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);
+  padding:6px;border-top:1px dashed rgba(245,166,35,0.25);border-bottom:1px dashed rgba(245,166,35,0.25);
+  margin:2px 0;background:rgba(245,166,35,0.03);
+}
+
+/* ── MATCHUP DETAIL ── */
+.matchup-detail-header{
+  background:var(--dark2);border:1px solid var(--border);border-radius:12px;
+  padding:18px 16px;margin-bottom:14px;
+}
+.matchup-detail-teams{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.mdt-team{flex:1;text-align:center;}
+.mdt-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--text);line-height:1.2;}
+.mdt-score{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--gold);line-height:1;}
+.mdt-score.loser{color:var(--text-muted);}
+.mdt-projected{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.mdt-vs{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text-muted);}
+.matchup-detail-status{
+  text-align:center;margin-top:12px;font-family:'Barlow Condensed',sans-serif;
+  font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);
+}
+.roster-section{margin-bottom:16px;}
+.roster-section-header{
+  font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);
+  padding:8px 0 4px;border-bottom:1px solid var(--border);margin-bottom:6px;
+}
+.player-row{
+  display:flex;align-items:center;gap:10px;padding:9px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.player-pos{
+  width:28px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.05em;flex-shrink:0;
+  background:var(--dark3);color:var(--text-muted);
+}
+.player-pos.QB{background:rgba(33,150,243,0.2);color:#64B5F6;}
+.player-pos.RB{background:rgba(76,175,80,0.2);color:#81C784;}
+.player-pos.WR{background:rgba(255,152,0,0.2);color:#FFB74D;}
+.player-pos.TE{background:rgba(156,39,176,0.2);color:#CE93D8;}
+.player-pos.K{background:rgba(255,235,59,0.2);color:#FFF176;}
+.player-pos.DST{background:rgba(244,67,54,0.2);color:#EF9A9A;}
+.player-pos.FLEX{background:rgba(0,188,212,0.2);color:#80DEEA;}
+.player-info{flex:1;min-width:0;}
+.player-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--text);}
+.player-meta{font-size:11px;color:var(--text-muted);}
+.player-pts{
+  font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--text);flex-shrink:0;min-width:40px;text-align:right;
+}
+.player-pts.zero{color:var(--text-muted);}
+.player-pts.projected{color:var(--text-muted);font-size:16px;}
+.bench-label{
+  font-size:10px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;
+  padding:6px 0 2px;display:block;
+}
+
+/* ── TEAM PAGE ── */
+.team-header{
+  background:linear-gradient(135deg,var(--dark2),var(--dark3));border:1px solid var(--border);
+  border-radius:14px;padding:18px;margin-bottom:14px;
+}
+.team-header-name{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:0.04em;margin-bottom:4px;}
+.team-header-owner{font-size:12px;color:var(--text-muted);margin-bottom:12px;}
+.team-stat-row{display:flex;gap:16px;}
+.team-stat{text-align:center;}
+.team-stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold);}
+.team-stat-lbl{font-size:10px;color:var(--text-muted);letter-spacing:0.08em;text-transform:uppercase;}
+
+/* ── SCORING SETTINGS ── */
+.settings-lock-bar{
+  background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);
+  border-radius:10px;padding:12px 14px;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.settings-lock-bar svg{width:16px;height:16px;color:var(--gold);flex-shrink:0;}
+.settings-lock-bar-text{font-size:12px;color:var(--text-muted);flex:1;}
+.settings-unlock-btn{
+  background:var(--gold);border:none;border-radius:6px;
+  color:var(--black);font-family:'Barlow Condensed',sans-serif;font-size:12px;
+  font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:6px 12px;cursor:pointer;
+  white-space:nowrap;
+}
+.settings-unlocked-bar{
+  background:rgba(76,175,80,0.1);border:1px solid rgba(76,175,80,0.3);
+  border-radius:10px;padding:10px 14px;margin-bottom:14px;
+  font-size:12px;color:#81C784;display:none;align-items:center;gap:8px;
+}
+.score-group{background:var(--dark2);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;}
+.score-group-header{
+  background:var(--dark3);padding:10px 14px;
+  font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.05em;color:var(--gold);
+  display:flex;align-items:center;gap:8px;
+}
+.score-group-header svg{width:16px;height:16px;}
+.score-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);gap:12px;
+}
+.score-row:last-child{border-bottom:none;}
+.score-label{font-size:13px;color:var(--text-dim);flex:1;}
+.score-note{font-size:10px;color:var(--text-muted);margin-top:1px;}
+.score-val{
+  font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text);
+  min-width:40px;text-align:right;flex-shrink:0;
+}
+.score-val.negative{color:var(--red);}
+.score-val.positive{color:var(--green);}
+.score-input{
+  background:var(--dark3);border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:16px;
+  padding:6px 8px;width:64px;text-align:center;outline:none;display:none;
+}
+.score-input:focus{border-color:var(--gold);}
+.settings-edit-mode .score-val{display:none;}
+.settings-edit-mode .score-input{display:block;}
+.save-settings-btn{
+  width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;
+  color:var(--black);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.1em;
+  cursor:pointer;margin-bottom:14px;display:none;
+}
+.settings-edit-mode .save-settings-btn{display:block;}
+
+/* ── MODALS ── */
+.ml-modal{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);
+  z-index:300;align-items:flex-end;justify-content:center;
+}
+.ml-modal.open{display:flex;}
+.ml-modal-sheet{
+  background:var(--dark2);border-radius:20px 20px 0 0;border-top:1px solid var(--border);
+  padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));
+  width:100%;max-width:600px;
+}
+.ml-modal-handle{width:36px;height:4px;background:var(--surface);border-radius:2px;margin:0 auto 16px;}
+.ml-modal-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);margin-bottom:14px;letter-spacing:0.05em;}
+.ml-modal-input{
+  width:100%;background:var(--dark3);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-family:'Barlow',sans-serif;font-size:16px;
+  padding:12px 14px;margin-bottom:10px;outline:none;
+}
+.ml-modal-input:focus{border-color:var(--gold);}
+.ml-modal-input::placeholder{color:var(--text-muted);}
+.ml-modal-error{font-size:12px;color:var(--red);margin-bottom:8px;display:none;}
+.ml-modal-actions{display:flex;gap:10px;}
+.ml-btn-cancel,.ml-btn-confirm{
+  flex:1;padding:13px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;
+  font-size:15px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border:none;
+}
+.ml-btn-cancel{background:var(--dark3);color:var(--text-muted);}
+.ml-btn-confirm{background:var(--gold);color:var(--black);}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div id="lock-screen">
+  <img src="IMG_4608.jpg" alt="BB" class="lock-logo" onerror="this.style.display='none'">
+  <div class="lock-title">My League</div>
+  <div class="lock-sub">ButBrooo Fantasy Football</div>
+  <input class="lock-input" id="lock-input" type="password" placeholder="Enter passcode"
+    onkeydown="if(event.key==='Enter')tryUnlock()">
+  <button class="lock-btn" onclick="tryUnlock()">Enter League</button>
+  <div class="lock-error" id="lock-error">Incorrect passcode</div>
+  <a href="index.html" class="lock-back">Back to ButBrooo</a>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- HEADER -->
+  <div id="ml-header">
+    <div class="ml-header-left">
+      <button class="ml-back-btn" id="back-btn" onclick="goBack()" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="ml-header-title" id="ml-title">My League</div>
+      <div class="ml-week-badge" id="week-badge">Week 14</div>
+    </div>
+    <img src="IMG_4608.jpg" alt="BB" class="ml-header-logo" onclick="navTo('home')" onerror="this.style.display='none'">
+  </div>
+
+  <!-- PAGES -->
+
+  <!-- HOME -->
+  <div id="page-home" class="ml-page active">
+    <div class="page-pad">
+      <div class="home-hero">
+        <div class="home-hero-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            <path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2>ButBrooo Fantasy</h2>
+          <p id="home-season-label">2024 Season &nbsp;|&nbsp; Week 14 &nbsp;|&nbsp; Regular Season</p>
+        </div>
+      </div>
+
+      <div class="quick-stats">
+        <div class="qs-card">
+          <div class="qs-label">Top Score</div>
+          <div class="qs-value" id="qs-top-score">152.4</div>
+          <div class="qs-sub" id="qs-top-team">GIRTH WIND & FIRE</div>
+        </div>
+        <div class="qs-card">
+          <div class="qs-label">League Leader</div>
+          <div class="qs-value" id="qs-leader-rec">10-3</div>
+          <div class="qs-sub" id="qs-leader-team">Straight Cash Homie</div>
+        </div>
+        <div class="qs-card">
+          <div class="qs-label">Highest PF</div>
+          <div class="qs-value" id="qs-pf">1847</div>
+          <div class="qs-sub" id="qs-pf-team">GIRTH WIND & FIRE</div>
+        </div>
+        <div class="qs-card">
+          <div class="qs-label">Weeks Left</div>
+          <div class="qs-value" id="qs-weeks">3</div>
+          <div class="qs-sub">Reg season ends Wk 14</div>
+        </div>
+      </div>
+
+      <div class="section-title">This Week's Matchups</div>
+      <div id="home-matchups"></div>
+    </div>
+  </div>
+
+  <!-- STANDINGS -->
+  <div id="page-standings" class="ml-page">
+    <div class="page-pad">
+      <div class="section-title">League Standings</div>
+      <div style="overflow-x:auto;">
+        <table class="standings-table">
+          <thead>
+            <tr>
+              <th style="width:40%">Team</th>
+              <th>W-L</th>
+              <th>PF</th>
+              <th>PA</th>
+              <th>Strk</th>
+            </tr>
+          </thead>
+          <tbody id="standings-body"></tbody>
+        </table>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:8px;">
+        Top 6 advance to playoffs &nbsp;|&nbsp; Tap a team to view roster
+      </div>
+    </div>
+  </div>
+
+  <!-- MATCHUPS -->
+  <div id="page-matchups" class="ml-page">
+    <div class="page-pad">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <div class="section-title" style="margin-bottom:0">Matchups</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button onclick="changeWeek(-1)" style="background:var(--dark2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 10px;cursor:pointer;font-size:16px;">&#8249;</button>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--gold);min-width:60px;text-align:center;" id="matchup-week-label">Week 14</div>
+          <button onclick="changeWeek(1)" style="background:var(--dark2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 10px;cursor:pointer;font-size:16px;">&#8250;</button>
+        </div>
+      </div>
+      <div id="matchups-list"></div>
+    </div>
+  </div>
+
+  <!-- MATCHUP DETAIL -->
+  <div id="page-matchup-detail" class="ml-page">
+    <div class="page-pad" id="matchup-detail-content"></div>
+  </div>
+
+  <!-- TEAM -->
+  <div id="page-team" class="ml-page">
+    <div class="page-pad" id="team-content"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="page-settings" class="ml-page">
+    <div class="page-pad">
+      <div class="section-title">League Settings</div>
+
+      <div class="settings-lock-bar" id="settings-lock-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <div class="settings-lock-bar-text">Commissioner passcode required to edit</div>
+        <button class="settings-unlock-btn" onclick="openSettingsLock()">Edit</button>
+      </div>
+      <div class="settings-unlocked-bar" id="settings-unlocked-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+          <path d="M5 13l4 4L19 7"/>
+        </svg>
+        Edit mode active — changes save to league data
+      </div>
+
+      <button class="save-settings-btn" onclick="saveSettings()">Save Scoring Settings</button>
+
+      <div id="settings-groups"></div>
+
+      <button class="save-settings-btn" onclick="saveSettings()" style="margin-top:4px;">Save Scoring Settings</button>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav id="ml-nav">
+    <button class="ml-nav-btn active" id="nav-home" onclick="navTo('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="ml-nav-btn" id="nav-standings" onclick="navTo('standings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Standings
+    </button>
+    <button class="ml-nav-btn" id="nav-matchups" onclick="navTo('matchups')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Matchups
+    </button>
+    <button class="ml-nav-btn" id="nav-settings" onclick="navTo('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+  </nav>
+</div>
+
+<!-- SETTINGS PIN MODAL -->
+<div class="ml-modal" id="settings-modal">
+  <div class="ml-modal-sheet">
+    <div class="ml-modal-handle"></div>
+    <div class="ml-modal-title">Commissioner Access</div>
+    <input class="ml-modal-input" id="settings-pin-input" type="password"
+      placeholder="Enter commissioner passcode" onkeydown="if(event.key==='Enter')confirmSettingsUnlock()">
+    <div class="ml-modal-error" id="settings-pin-error">Incorrect passcode</div>
+    <div class="ml-modal-actions">
+      <button class="ml-btn-cancel" onclick="closeSettingsModal()">Cancel</button>
+      <button class="ml-btn-confirm" onclick="confirmSettingsUnlock()">Unlock</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// PASSCODES
+// ═══════════════════════════════════════════════════════
+var LEAGUE_PASS       = 'bodcast';
+var COMMISSIONER_PASS = 'dictator';
+var settingsUnlocked  = false;
+var currentWeek       = 14;
+var navHistory        = [];
+
+// ═══════════════════════════════════════════════════════
+// SAMPLE DATA (replace with Sleeper API in Phase 2)
+// ═══════════════════════════════════════════════════════
+var TEAMS = [
+  {id:1,  name:'Straight Cash Homie',       owner:'Koslow',  wins:10, losses:3, pf:1847.2, pa:1612.4, streak:'W3'},
+  {id:2,  name:'GIRTH WIND & FIRE',          owner:'Freid',   wins:9,  losses:4, pf:1901.6, pa:1698.2, streak:'W1'},
+  {id:3,  name:'RackGPT',                    owner:'Shark',   wins:9,  losses:4, pf:1776.4, pa:1654.8, streak:'L1'},
+  {id:4,  name:'CHAMP is that you?',         owner:'Phil',    wins:8,  losses:5, pf:1723.8, pa:1689.2, streak:'W2'},
+  {id:5,  name:'Welcome to REEK BURGER',     owner:'Evan',    wins:7,  losses:6, pf:1698.4, pa:1701.6, streak:'W1'},
+  {id:6,  name:'The Goffather',              owner:'Alman',   wins:7,  losses:6, pf:1654.2, pa:1688.8, streak:'L2'},
+  {id:7,  name:'The lamb goes bahahahahha',  owner:'Bsho',    wins:6,  losses:7, pf:1612.6, pa:1698.4, streak:'L1'},
+  {id:8,  name:'Alien Juice Cleanse',        owner:'Jordan',  wins:6,  losses:7, pf:1598.8, pa:1643.2, streak:'W1'},
+  {id:9,  name:'Fuck me TONY',               owner:'Logan',   wins:5,  losses:8, pf:1567.4, pa:1712.6, streak:'L3'},
+  {id:10, name:'RACKED JACK',               owner:'Noah',    wins:5,  losses:8, pf:1543.2, pa:1698.8, streak:'L1'},
+  {id:11, name:'Team Fungie Dungy',          owner:'Dan',     wins:4,  losses:9, pf:1512.8, pa:1756.4, streak:'L2'},
+  {id:12, name:'SUB 6 FORTY',               owner:'Danny',   wins:3,  losses:10,pf:1478.6, pa:1812.2, streak:'L4'},
+];
+
+var MATCHUPS = {
+  14: [
+    {id:1, team_a:1, team_b:4, score_a:98.4,  score_b:87.2,  proj_a:142.6, proj_b:138.4, status:'in_progress'},
+    {id:2, team_a:2, team_b:5, score_a:124.6, score_b:103.8, proj_a:158.2, proj_b:134.6, status:'in_progress'},
+    {id:3, team_a:3, team_b:6, score_a:89.2,  score_b:112.4, proj_a:141.8, proj_b:148.2, status:'in_progress'},
+    {id:4, team_a:7, team_b:8, score_a:76.4,  score_b:88.6,  proj_a:128.4, proj_b:136.8, status:'in_progress'},
+    {id:5, team_a:9, team_b:10,score_a:102.8, score_b:67.4,  proj_a:139.6, proj_b:124.2, status:'in_progress'},
+    {id:6, team_a:11,team_b:12,score_a:84.6,  score_b:71.2,  proj_a:132.4, proj_b:118.6, status:'in_progress'},
+  ],
+  13: [
+    {id:1, team_a:1, team_b:9, score_a:148.2, score_b:112.4, proj_a:0, proj_b:0, status:'final'},
+    {id:2, team_a:2, team_b:7, score_a:164.8, score_b:98.6,  proj_a:0, proj_b:0, status:'final'},
+    {id:3, team_a:3, team_b:12,score_a:134.2, score_b:89.4,  proj_a:0, proj_b:0, status:'final'},
+    {id:4, team_a:4, team_b:6, score_a:142.6, score_b:128.8, proj_a:0, proj_b:0, status:'final'},
+    {id:5, team_a:5, team_b:11,score_a:118.4, score_b:104.6, proj_a:0, proj_b:0, status:'final'},
+    {id:6, team_a:8, team_b:10,score_a:124.8, score_b:138.6, proj_a:0, proj_b:0, status:'final'},
+  ],
+};
+
+// Sample rosters for matchup detail / team view
+var ROSTERS = {
+  1: {
+    starters:[
+      {pos:'QB',  name:'Lamar Jackson',     team:'BAL', pts:28.4, proj:32.1},
+      {pos:'RB',  name:'Christian McCaffrey',team:'SF',  pts:18.6, proj:24.8},
+      {pos:'RB',  name:'Derrick Henry',      team:'TEN', pts:14.2, proj:18.4},
+      {pos:'WR',  name:'CeeDee Lamb',        team:'DAL', pts:22.8, proj:26.4},
+      {pos:'WR',  name:'Tyreek Hill',        team:'MIA', pts:8.4,  proj:22.6},
+      {pos:'TE',  name:'Sam LaPorta',        team:'DET', pts:3.2,  proj:12.4},
+      {pos:'FLEX',name:'Josh Jacobs',        team:'GB',  pts:4.8,  proj:14.6},
+      {pos:'K',   name:'Jake Elliott',       team:'PHI', pts:0,    proj:8.2},
+      {pos:'DST', name:'SF Defense',         team:'SF',  pts:8.0,  proj:9.4},
+    ],
+    bench:[
+      {pos:'QB',  name:'Jared Goff',         team:'DET', pts:24.6, proj:0},
+      {pos:'RB',  name:'Alvin Kamara',       team:'NO',  pts:10.4, proj:0},
+      {pos:'WR',  name:'Stefon Diggs',       team:'BUF', pts:6.2,  proj:0},
+      {pos:'WR',  name:'DeAndre Hopkins',    team:'TEN', pts:4.8,  proj:0},
+      {pos:'TE',  name:'Cole Kmet',          team:'CHI', pts:7.4,  proj:0},
+    ]
+  },
+  4: {
+    starters:[
+      {pos:'QB',  name:'Josh Allen',         team:'BUF', pts:34.2, proj:38.4},
+      {pos:'RB',  name:'Saquon Barkley',     team:'PHI', pts:12.8, proj:22.6},
+      {pos:'RB',  name:'Tony Pollard',       team:'TEN', pts:8.4,  proj:14.2},
+      {pos:'WR',  name:'Stefon Diggs',       team:'BUF', pts:18.6, proj:22.4},
+      {pos:'WR',  name:'Keenan Allen',       team:'LAC', pts:6.2,  proj:16.8},
+      {pos:'TE',  name:'Travis Kelce',       team:'KC',  pts:2.4,  proj:18.6},
+      {pos:'FLEX',name:'Jaylen Waddle',      team:'MIA', pts:8.6,  proj:16.4},
+      {pos:'K',   name:'Harrison Butker',    team:'KC',  pts:0,    proj:9.4},
+      {pos:'DST', name:'DAL Defense',        team:'DAL', pts:4.0,  proj:8.2},
+    ],
+    bench:[
+      {pos:'QB',  name:'Geno Smith',         team:'SEA', pts:18.2, proj:0},
+      {pos:'RB',  name:'Dameon Pierce',      team:'HOU', pts:6.4,  proj:0},
+      {pos:'WR',  name:'Amari Cooper',       team:'CLE', pts:3.2,  proj:0},
+      {pos:'TE',  name:'David Njoku',        team:'CLE', pts:9.8,  proj:0},
+    ]
+  }
+};
+// Fill in basic rosters for other teams
+for (var i = 1; i <= 12; i++) {
+  if (!ROSTERS[i]) {
+    ROSTERS[i] = {
+      starters:[
+        {pos:'QB',  name:'Starter QB',   team:'NFL', pts:0, proj:24.0},
+        {pos:'RB',  name:'Starter RB1',  team:'NFL', pts:0, proj:16.0},
+        {pos:'RB',  name:'Starter RB2',  team:'NFL', pts:0, proj:12.0},
+        {pos:'WR',  name:'Starter WR1',  team:'NFL', pts:0, proj:18.0},
+        {pos:'WR',  name:'Starter WR2',  team:'NFL', pts:0, proj:14.0},
+        {pos:'TE',  name:'Starter TE',   team:'NFL', pts:0, proj:10.0},
+        {pos:'FLEX',name:'Starter FLEX', team:'NFL', pts:0, proj:12.0},
+        {pos:'K',   name:'Starter K',    team:'NFL', pts:0, proj:8.0},
+        {pos:'DST', name:'Starter DST',  team:'NFL', pts:0, proj:9.0},
+      ],
+      bench:[
+        {pos:'QB',  name:'Bench QB',   team:'NFL', pts:0, proj:0},
+        {pos:'RB',  name:'Bench RB',   team:'NFL', pts:0, proj:0},
+        {pos:'WR',  name:'Bench WR',   team:'NFL', pts:0, proj:0},
+        {pos:'TE',  name:'Bench TE',   team:'NFL', pts:0, proj:0},
+      ]
+    };
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// SCORING SETTINGS (Sleeper-identical structure)
+// ═══════════════════════════════════════════════════════
+var SCORING = {
+  passing: [
+    {key:'pass_yd',    label:'Passing Yards',            note:'Per 25 yards (0.04 pts/yd)', val:1,    per:25},
+    {key:'pass_td',    label:'Passing Touchdown',         note:'',                           val:4},
+    {key:'pass_int',   label:'Interception Thrown',       note:'',                           val:-1},
+    {key:'pass_2pt',   label:'2PT Conversion Thrown',     note:'',                           val:2},
+    {key:'pass_inc',   label:'Incomplete Pass',           note:'Optional penalty',           val:0},
+    {key:'pass_sack',  label:'Sacked',                    note:'Optional penalty',           val:0},
+    {key:'pass_300',   label:'300+ Passing Yard Bonus',   note:'',                           val:0},
+    {key:'pass_400',   label:'400+ Passing Yard Bonus',   note:'',                           val:0},
+    {key:'pick6',      label:'Pick 6 Thrown',             note:'Stacks with INT',            val:-2},
+  ],
+  rushing: [
+    {key:'rush_yd',    label:'Rushing Yards',             note:'Per 10 yards (0.1 pts/yd)', val:1,    per:10},
+    {key:'rush_td',    label:'Rushing Touchdown',          note:'',                           val:6},
+    {key:'rush_2pt',   label:'2PT Conversion Rush',        note:'',                           val:2},
+    {key:'rush_100',   label:'100-199 Rush Yard Bonus',   note:'Does not stack',             val:0},
+    {key:'rush_200',   label:'200+ Rush Yard Bonus',      note:'Does not stack',             val:0},
+  ],
+  receiving: [
+    {key:'rec',        label:'Reception (PPR)',            note:'Per catch',                  val:1},
+    {key:'rec_yd',     label:'Receiving Yards',            note:'Per 10 yards (0.1 pts/yd)', val:1,    per:10},
+    {key:'rec_td',     label:'Receiving Touchdown',        note:'',                           val:6},
+    {key:'rec_2pt',    label:'2PT Conversion Rec',         note:'',                           val:2},
+    {key:'rec_100',    label:'100-199 Rec Yard Bonus',     note:'Does not stack',             val:0},
+    {key:'rec_200',    label:'200+ Rec Yard Bonus',        note:'Does not stack',             val:0},
+    {key:'rec_tgt',    label:'Target',                     note:'Optional',                   val:0},
+  ],
+  fumbles: [
+    {key:'fum_lost',   label:'Fumble Lost',               note:'Any position',               val:-2},
+    {key:'fum',        label:'Fumble (not lost)',          note:'Optional penalty',           val:0},
+  ],
+  kicking: [
+    {key:'fg_0_19',    label:'FG Made 0-19 yards',        note:'',                           val:3},
+    {key:'fg_20_29',   label:'FG Made 20-29 yards',       note:'',                           val:3},
+    {key:'fg_30_39',   label:'FG Made 30-39 yards',       note:'',                           val:3},
+    {key:'fg_40_49',   label:'FG Made 40-49 yards',       note:'',                           val:4},
+    {key:'fg_50',      label:'FG Made 50+ yards',         note:'',                           val:5},
+    {key:'fg_miss',    label:'FG Missed',                  note:'Any distance',               val:-1},
+    {key:'pat_made',   label:'PAT Made',                   note:'Extra point',                val:1},
+    {key:'pat_miss',   label:'PAT Missed',                 note:'',                           val:-1},
+  ],
+  defense: [
+    {key:'dst_sack',   label:'Sack',                       note:'',                           val:1},
+    {key:'dst_int',    label:'Interception',               note:'',                           val:2},
+    {key:'dst_fum_rec',label:'Fumble Recovery',            note:'',                           val:2},
+    {key:'dst_safety', label:'Safety',                     note:'',                           val:2},
+    {key:'dst_td',     label:'Defensive TD',               note:'',                           val:6},
+    {key:'dst_blk',    label:'Blocked Kick',               note:'',                           val:2},
+    {key:'dst_ret_td', label:'Return Touchdown',           note:'',                           val:6},
+    {key:'dst_pa_0',   label:'Points Allowed: 0',          note:'Shutout bonus',              val:10},
+    {key:'dst_pa_1_6', label:'Points Allowed: 1-6',        note:'',                           val:7},
+    {key:'dst_pa_7_13',label:'Points Allowed: 7-13',       note:'',                           val:4},
+    {key:'dst_pa_14_20',label:'Points Allowed: 14-20',     note:'',                           val:1},
+    {key:'dst_pa_21_27',label:'Points Allowed: 21-27',     note:'',                           val:0},
+    {key:'dst_pa_28_34',label:'Points Allowed: 28-34',     note:'',                           val:-1},
+    {key:'dst_pa_35',  label:'Points Allowed: 35+',        note:'',                           val:-4},
+  ],
+};
+
+var SCORE_GROUP_META = {
+  passing:   {label:'Passing',   icon:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.63 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.18 6.18l1.87-1.87a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>'},
+  rushing:   {label:'Rushing',   icon:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>'},
+  receiving: {label:'Receiving', icon:'<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>'},
+  fumbles:   {label:'Fumbles',   icon:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>'},
+  kicking:   {label:'Kicking',   icon:'<path d="M12 22V12m0 0L8 8m4 4l4-4M12 2v4"/>'},
+  defense:   {label:'Defense / Special Teams', icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'},
+};
+
+// ═══════════════════════════════════════════════════════
+// LOCK / UNLOCK
+// ═══════════════════════════════════════════════════════
+function tryUnlock() {
+  var val = document.getElementById('lock-input').value.trim().toLowerCase();
+  if (val === LEAGUE_PASS) {
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('app').classList.add('unlocked');
+    initApp();
+  } else {
+    document.getElementById('lock-error').style.display = 'block';
+    document.getElementById('lock-input').value = '';
+    document.getElementById('lock-input').focus();
+  }
+}
+
+function initApp() {
+  renderHomeMatchups();
+  renderStandings();
+  renderMatchups(currentWeek);
+  renderSettings();
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+var PAGE_TITLES = {
+  home:'My League', standings:'Standings', matchups:'Matchups',
+  'matchup-detail':'Matchup', team:'Team Roster', settings:'Settings'
+};
+var DETAIL_PAGES = ['matchup-detail','team'];
+
+function navTo(page) {
+  document.querySelectorAll('.ml-page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.ml-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('page-'+page).classList.add('active');
+  if (document.getElementById('nav-'+page)) {
+    document.getElementById('nav-'+page).classList.add('active');
+  }
+  document.getElementById('ml-title').textContent = PAGE_TITLES[page] || 'My League';
+  document.getElementById('back-btn').style.display = DETAIL_PAGES.indexOf(page) > -1 ? 'flex' : 'none';
+  document.getElementById('week-badge').style.display = page === 'matchups' || page === 'matchup-detail' ? 'flex' : 'flex';
+  document.getElementById('page-'+page).scrollTop = 0;
+  navHistory.push(page);
+}
+
+function goBack() {
+  navHistory.pop();
+  var prev = navHistory.length > 0 ? navHistory[navHistory.length-1] : 'home';
+  navHistory.pop();
+  navTo(prev);
+}
+
+// ═══════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════
+function renderHomeMatchups() {
+  var matchups = MATCHUPS[currentWeek] || [];
+  var html = '';
+  matchups.forEach(function(m) {
+    var ta = teamById(m.team_a);
+    var tb = teamById(m.team_b);
+    var aWin = m.score_a > m.score_b;
+    var statusLabel = m.status === 'final' ? 'Final' : (m.status === 'in_progress' ? 'In Progress' : 'Upcoming');
+    html += '<div class="matchup-card" onclick="openMatchup(' + m.id + ',' + currentWeek + ')">'
+      + '<div class="matchup-teams">'
+      + '<div class="matchup-team">'
+      + '<div class="matchup-team-name">' + ta.name + '</div>'
+      + '<div class="matchup-score ' + (m.status!=='upcoming'?(aWin?'winner':'loser'):'') + '">' + (m.score_a||'0.0').toFixed ? m.score_a.toFixed(1) : m.score_a + '</div>'
+      + '</div>'
+      + '<div class="matchup-vs">VS</div>'
+      + '<div class="matchup-team">'
+      + '<div class="matchup-team-name">' + tb.name + '</div>'
+      + '<div class="matchup-score ' + (m.status!=='upcoming'?(!aWin?'winner':'loser'):'') + '">' + (m.score_b||'0.0').toFixed ? m.score_b.toFixed(1) : m.score_b + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<div class="matchup-status' + (m.status==='in_progress'?' live':'') + '">' + statusLabel + '</div>'
+      + '</div>';
+  });
+  document.getElementById('home-matchups').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// STANDINGS
+// ═══════════════════════════════════════════════════════
+function renderStandings() {
+  var sorted = TEAMS.slice().sort(function(a,b){
+    if (b.wins !== a.wins) return b.wins - a.wins;
+    return b.pf - a.pf;
+  });
+  var html = '';
+  sorted.forEach(function(t, i) {
+    var rank = i + 1;
+    var playoff = rank <= 6;
+    if (rank === 7) html += '<tr><td colspan="5" style="padding:0;"><div class="playoff-divider">Playoff Line</div></td></tr>';
+    html += '<tr onclick="openTeam(' + t.id + ')">'
+      + '<td><span class="standings-rank' + (playoff?' top':'') + '">' + rank + '</span>'
+      + '<span class="standings-team-name">' + t.name + '</span></td>'
+      + '<td><span class="standings-record">' + t.wins + '-' + t.losses + '</span></td>'
+      + '<td class="standings-pts">' + t.pf.toFixed(1) + '</td>'
+      + '<td class="standings-pts">' + t.pa.toFixed(1) + '</td>'
+      + '<td style="font-family:\'Barlow Condensed\',sans-serif;font-size:13px;font-weight:600;color:' + (t.streak.startsWith('W')?'var(--green)':'var(--red)') + '">' + t.streak + '</td>'
+      + '</tr>';
+  });
+  document.getElementById('standings-body').innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+// MATCHUPS
+// ═══════════════════════════════════════════════════════
+function changeWeek(dir) {
+  var newWeek = currentWeek + dir;
+  if (newWeek < 1 || newWeek > 18) return;
+  currentWeek = newWeek;
+  document.getElementById('matchup-week-label').textContent = 'Week ' + currentWeek;
+  document.getElementById('week-badge').textContent = 'Week ' + currentWeek;
+  renderMatchups(currentWeek);
+}
+
+function renderMatchups(week) {
+  var matchups = MATCHUPS[week] || [];
+  if (!matchups.length) {
+    document.getElementById('matchups-list').innerHTML = '<div style="text-align:center;padding:32px 0;color:var(--text-muted);font-size:14px;">No matchup data for Week ' + week + '</div>';
+    return;
+  }
+  var html = '';
+  matchups.forEach(function(m) {
+    var ta = teamById(m.team_a);
+    var tb = teamById(m.team_b);
+    var aWin = m.score_a > m.score_b;
+    var statusLabel = m.status === 'final' ? 'Final' : (m.status === 'in_progress' ? 'In Progress' : 'Upcoming');
+    html += '<div class="matchup-card" onclick="openMatchup(' + m.id + ',' + week + ')">'
+      + '<div class="matchup-teams">'
+      + '<div class="matchup-team">'
+      + '<div class="matchup-team-name">' + ta.name + '</div>'
+      + '<div class="matchup-score ' + (m.status!=='upcoming'?(aWin?'winner':'loser'):'') + '">' + m.score_a.toFixed(1) + '</div>'
+      + '</div>'
+      + '<div class="matchup-vs">VS</div>'
+      + '<div class="matchup-team">'
+      + '<div class="matchup-team-name">' + tb.name + '</div>'
+      + '<div class="matchup-score ' + (m.status!=='upcoming'?(!aWin?'winner':'loser'):'') + '">' + m.score_b.toFixed(1) + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<div class="matchup-status' + (m.status==='in_progress'?' live':'') + '">' + statusLabel + ' &nbsp;|&nbsp; Proj: ' + m.proj_a.toFixed(1) + ' - ' + m.proj_b.toFixed(1) + '</div>'
+      + '</div>';
+  });
+  document.getElementById('matchups-list').innerHTML = html;
+}
+
+function openMatchup(id, week) {
+  var matchups = MATCHUPS[week] || [];
+  var m = null;
+  for (var i = 0; i < matchups.length; i++) { if (matchups[i].id === id) { m = matchups[i]; break; } }
+  if (!m) return;
+  var ta = teamById(m.team_a);
+  var tb = teamById(m.team_b);
+  var ra = ROSTERS[m.team_a];
+  var rb = ROSTERS[m.team_b];
+  var aWin = m.score_a >= m.score_b;
+  var statusLabel = m.status === 'final' ? 'Final' : (m.status === 'in_progress' ? 'In Progress' : 'Upcoming');
+
+  function rosterHTML(roster, teamId) {
+    var html = '<div class="roster-section">';
+    html += '<div class="roster-section-header">Starting Lineup</div>';
+    roster.starters.forEach(function(p) {
+      html += playerRowHTML(p, m.status);
+    });
+    html += '</div><div class="roster-section">';
+    html += '<span class="bench-label">Bench</span>';
+    roster.bench.forEach(function(p) {
+      html += playerRowHTML(p, m.status);
+    });
+    html += '</div>';
+    return html;
+  }
+
+  var html = '<div class="matchup-detail-header">'
+    + '<div class="matchup-detail-teams">'
+    + '<div class="mdt-team"><div class="mdt-name">' + ta.name + '</div>'
+    + '<div class="mdt-score ' + (!aWin?'loser':'') + '">' + m.score_a.toFixed(1) + '</div>'
+    + (m.proj_a > 0 ? '<div class="mdt-projected">Proj: ' + m.proj_a.toFixed(1) + '</div>' : '')
+    + '</div>'
+    + '<div class="mdt-vs">VS</div>'
+    + '<div class="mdt-team"><div class="mdt-name">' + tb.name + '</div>'
+    + '<div class="mdt-score ' + (aWin?'loser':'') + '">' + m.score_b.toFixed(1) + '</div>'
+    + (m.proj_b > 0 ? '<div class="mdt-projected">Proj: ' + m.proj_b.toFixed(1) + '</div>' : '')
+    + '</div>'
+    + '</div>'
+    + '<div class="matchup-detail-status">' + statusLabel + ' &nbsp;|&nbsp; Week ' + week + '</div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
+    + '<div>' + rosterHTML(ra, m.team_a) + '</div>'
+    + '<div>' + rosterHTML(rb, m.team_b) + '</div>'
+    + '</div>';
+
+  document.getElementById('matchup-detail-content').innerHTML = html;
+  navTo('matchup-detail');
+}
+
+function playerRowHTML(p, status) {
+  var pts = p.pts;
+  var showProj = status === 'in_progress' || status === 'upcoming';
+  return '<div class="player-row">'
+    + '<div class="player-pos ' + p.pos + '">' + p.pos + '</div>'
+    + '<div class="player-info">'
+    + '<div class="player-name">' + p.name + '</div>'
+    + '<div class="player-meta">' + p.team + '</div>'
+    + '</div>'
+    + '<div class="player-pts' + (pts===0?' zero':'') + '">'
+    + (showProj && pts === 0 ? '<span class="player-pts projected">Proj ' + p.proj.toFixed(1) + '</span>' : pts.toFixed(1))
+    + '</div>'
+    + '</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// TEAM
+// ═══════════════════════════════════════════════════════
+function openTeam(id) {
+  var t = teamById(id);
+  var r = ROSTERS[id];
+  var html = '<div class="team-header">'
+    + '<div class="team-header-name">' + t.name + '</div>'
+    + '<div class="team-header-owner">Manager: ' + t.owner + '</div>'
+    + '<div class="team-stat-row">'
+    + '<div class="team-stat"><div class="team-stat-val">' + t.wins + '-' + t.losses + '</div><div class="team-stat-lbl">Record</div></div>'
+    + '<div class="team-stat" style="margin-left:20px;"><div class="team-stat-val">' + t.pf.toFixed(1) + '</div><div class="team-stat-lbl">PF</div></div>'
+    + '<div class="team-stat" style="margin-left:20px;"><div class="team-stat-val">' + t.pa.toFixed(1) + '</div><div class="team-stat-lbl">PA</div></div>'
+    + '</div></div>'
+    + '<div class="section-title">Starting Lineup</div>';
+  r.starters.forEach(function(p) { html += playerRowHTML(p, 'in_progress'); });
+  html += '<div class="section-title" style="margin-top:14px;">Bench</div>';
+  r.bench.forEach(function(p) { html += playerRowHTML(p, 'in_progress'); });
+  document.getElementById('team-content').innerHTML = html;
+  navTo('team');
+}
+
+// ═══════════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════════
+function renderSettings() {
+  var groups = '';
+  Object.keys(SCORING).forEach(function(groupKey) {
+    var meta  = SCORE_GROUP_META[groupKey];
+    var items = SCORING[groupKey];
+    groups += '<div class="score-group">'
+      + '<div class="score-group-header">'
+      + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + meta.icon + '</svg>'
+      + meta.label + '</div>';
+    items.forEach(function(item) {
+      var valClass = item.val < 0 ? 'negative' : (item.val > 0 ? 'positive' : '');
+      groups += '<div class="score-row">'
+        + '<div><div class="score-label">' + item.label + '</div>'
+        + (item.note ? '<div class="score-note">' + item.note + '</div>' : '')
+        + '</div>'
+        + '<div class="score-val ' + valClass + '" id="sv-' + item.key + '">' + item.val + '</div>'
+        + '<input class="score-input" id="si-' + item.key + '" type="number" value="' + item.val + '" step="0.5">'
+        + '</div>';
+    });
+    groups += '</div>';
+  });
+  document.getElementById('settings-groups').innerHTML = groups;
+}
+
+function openSettingsLock() {
+  document.getElementById('settings-modal').classList.add('open');
+  document.getElementById('settings-pin-input').value = '';
+  document.getElementById('settings-pin-error').style.display = 'none';
+  setTimeout(function(){ document.getElementById('settings-pin-input').focus(); }, 100);
+}
+function closeSettingsModal() {
+  document.getElementById('settings-modal').classList.remove('open');
+}
+function confirmSettingsUnlock() {
+  var val = document.getElementById('settings-pin-input').value.trim().toLowerCase();
+  if (val === COMMISSIONER_PASS) {
+    settingsUnlocked = true;
+    closeSettingsModal();
+    document.getElementById('settings-lock-bar').style.display = 'none';
+    document.getElementById('settings-unlocked-bar').style.display = 'flex';
+    document.getElementById('settings-groups').classList.add('settings-edit-mode');
+    document.querySelectorAll('.save-settings-btn').forEach(function(b){ b.style.display='block'; });
+  } else {
+    document.getElementById('settings-pin-error').style.display = 'block';
+    document.getElementById('settings-pin-input').value = '';
+  }
+}
+document.getElementById('settings-modal').addEventListener('click', function(e){ if(e.target===this) closeSettingsModal(); });
+
+function saveSettings() {
+  Object.keys(SCORING).forEach(function(groupKey) {
+    SCORING[groupKey].forEach(function(item) {
+      var input = document.getElementById('si-' + item.key);
+      if (input) {
+        var newVal = parseFloat(input.value);
+        if (!isNaN(newVal)) {
+          item.val = newVal;
+          var display = document.getElementById('sv-' + item.key);
+          if (display) {
+            display.textContent = newVal;
+            display.className = 'score-val ' + (newVal < 0 ? 'negative' : (newVal > 0 ? 'positive' : ''));
+          }
+        }
+      }
+    });
+  });
+  // Lock settings back
+  settingsUnlocked = false;
+  document.getElementById('settings-lock-bar').style.display = 'flex';
+  document.getElementById('settings-unlocked-bar').style.display = 'none';
+  document.getElementById('settings-groups').classList.remove('settings-edit-mode');
+  document.querySelectorAll('.save-settings-btn').forEach(function(b){ b.style.display='none'; });
+  alert('Settings saved!');
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function teamById(id) {
+  for (var i = 0; i < TEAMS.length; i++) { if (TEAMS[i].id === id) return TEAMS[i]; }
+  return {id:id, name:'Unknown Team', owner:'', wins:0, losses:0, pf:0, pa:0, streak:'-'};
+}
+
+// Init navigation history
+navHistory = ['home'];
+</script>
+</body>
+</html>
